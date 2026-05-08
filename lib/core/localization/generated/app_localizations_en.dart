@@ -3759,9 +3759,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_appIcon_default => 'Default';
 
   @override
-  String settings_appIcon_variant(int index) {
-    return 'Icon $index';
-  }
+  String get settings_appIcon_dark => 'Dark';
 
   @override
   String get settings_appIcon_hint =>

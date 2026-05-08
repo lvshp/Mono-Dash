@@ -9,9 +9,7 @@ part 'app_settings_provider.g.dart';
 
 enum AppIconVariant {
   defaultIcon(null, 'assets/icons/1panel_mate_app_icon_2.png'),
-  icon3('icon_3', 'assets/icons/1panel_mate_app_icon_3.png'),
-  icon4('icon_4', 'assets/icons/1panel_mate_app_icon_4.png'),
-  icon5('icon_5', 'assets/icons/1panel_mate_app_icon_5.png');
+  dark('icon_dark', 'assets/icons/mono-dash-appicon-dark.png');
 
   const AppIconVariant(this.alternateIconName, this.assetPath);
 
@@ -20,9 +18,7 @@ enum AppIconVariant {
 
   String labelOf(AppLocalizations l10n) => switch (this) {
     AppIconVariant.defaultIcon => l10n.settings_appIcon_default,
-    AppIconVariant.icon3 => l10n.settings_appIcon_variant(3),
-    AppIconVariant.icon4 => l10n.settings_appIcon_variant(4),
-    AppIconVariant.icon5 => l10n.settings_appIcon_variant(5),
+    AppIconVariant.dark => l10n.settings_appIcon_dark,
   };
 
   static AppIconVariant fromName(String? name) {

@@ -5157,14 +5157,9 @@
   "@settings_appIcon_default": {
     "description": "Default app icon label."
   },
-  "settings_appIcon_variant": "Icon {index}",
-  "@settings_appIcon_variant": {
-    "description": "Alternate app icon label.",
-    "placeholders": {
-      "index": {
-        "type": "int"
-      }
-    }
+  "settings_appIcon_dark": "Dark",
+  "@settings_appIcon_dark": {
+    "description": "Dark app icon label."
   },
   "settings_appIcon_hint": "Tip: icon changes may take a moment on some system versions.",
   "@settings_appIcon_hint": {

@@ -3659,9 +3659,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_appIcon_default => '默认';
 
   @override
-  String settings_appIcon_variant(int index) {
-    return '图标 $index';
-  }
+  String get settings_appIcon_dark => '深色';
 
   @override
   String get settings_appIcon_hint => '提示：切换图标可能在某些系统版本上会有短暂延迟。';

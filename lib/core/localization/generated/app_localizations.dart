@@ -6908,11 +6908,11 @@ abstract class AppLocalizations {
   /// **'Default'**
   String get settings_appIcon_default;
 
-  /// Alternate app icon label.
+  /// Dark app icon label.
   ///
   /// In en, this message translates to:
-  /// **'Icon {index}'**
-  String settings_appIcon_variant(int index);
+  /// **'Dark'**
+  String get settings_appIcon_dark;
 
   /// Hint below app icon options.
   ///
