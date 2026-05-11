@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/widgets.dart' show Brightness;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -8,22 +9,47 @@ import '../../../../core/localization/generated/app_localizations.dart';
 part 'app_settings_provider.g.dart';
 
 enum AppIconVariant {
-  defaultIcon(null, 'assets/icons/1panel_mate_app_icon_2.png'),
-  dark('icon_dark', 'assets/icons/mono-dash-appicon-dark.png');
+  defaultIcon('default', null, 'assets/icons/1panel_mate_app_icon_2.png'),
+  dark('icon_dark', 'icon_dark', 'assets/icons/mono-dash-appicon-dark.png'),
+  adaptive('adaptive', null, 'assets/icons/1panel_mate_app_icon_2.png');
 
-  const AppIconVariant(this.alternateIconName, this.assetPath);
+  const AppIconVariant(
+    this.storageName,
+    this.alternateIconName,
+    this.assetPath,
+  );
 
+  final String storageName;
   final String? alternateIconName;
   final String assetPath;
 
   String labelOf(AppLocalizations l10n) => switch (this) {
     AppIconVariant.defaultIcon => l10n.settings_appIcon_default,
     AppIconVariant.dark => l10n.settings_appIcon_dark,
+    AppIconVariant.adaptive => l10n.settings_appIcon_adaptive,
+  };
+
+  String? effectiveAlternateIconName(Brightness brightness) => switch (this) {
+    AppIconVariant.defaultIcon => null,
+    AppIconVariant.dark => alternateIconName,
+    AppIconVariant.adaptive =>
+      brightness == Brightness.dark
+          ? AppIconVariant.dark.alternateIconName
+          : null,
+  };
+
+  String effectiveAssetPath(Brightness brightness) => switch (this) {
+    AppIconVariant.adaptive =>
+      brightness == Brightness.dark
+          ? AppIconVariant.dark.assetPath
+          : AppIconVariant.defaultIcon.assetPath,
+    _ => assetPath,
   };
 
   static AppIconVariant fromName(String? name) {
     return values.firstWhere(
-      (variant) => variant.alternateIconName == name,
+      (variant) =>
+          variant.storageName == name || variant.alternateIconName == name,
       orElse: () => AppIconVariant.defaultIcon,
     );
   }
@@ -141,11 +167,10 @@ class AppSettingsController extends _$AppSettingsController {
     state = AsyncValue.data(previous.copyWith(appIconVariant: variant));
 
     final prefs = await SharedPreferences.getInstance();
-    final iconName = variant.alternateIconName;
-    if (iconName == null) {
+    if (variant == AppIconVariant.defaultIcon) {
       await prefs.remove(_appIconVariantKey);
     } else {
-      await prefs.setString(_appIconVariantKey, iconName);
+      await prefs.setString(_appIconVariantKey, variant.storageName);
     }
   }
 

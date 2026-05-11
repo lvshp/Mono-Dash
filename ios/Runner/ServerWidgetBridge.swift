@@ -27,6 +27,9 @@ final class ServerWidgetBridge {
       case "upsertSnapshot":
         upsertSnapshot(from: call.arguments)
         result(nil)
+      case "syncSettings":
+        syncSettings(from: call.arguments)
+        result(nil)
       case "removeServer":
         removeServer(from: call.arguments)
         result(nil)
@@ -79,6 +82,20 @@ final class ServerWidgetBridge {
     WidgetCenter.shared.reloadTimelines(ofKind: widgetKind)
   }
 
+  private static func syncSettings(from arguments: Any?) {
+    guard
+      let arguments = arguments as? [String: Any],
+      let settings = arguments["settings"] as? [String: Any]
+    else { return }
+
+    var merged = jsonDictionaryValue(forKey: settingsKey)
+    for (key, value) in sanitize(settings) {
+      merged[key] = value
+    }
+    setJsonValue(merged, forKey: settingsKey)
+    WidgetCenter.shared.reloadTimelines(ofKind: widgetKind)
+  }
+
   private static func removeServer(from arguments: Any?) {
     guard
       let arguments = arguments as? [String: Any],
@@ -123,6 +140,15 @@ final class ServerWidgetBridge {
       let string = defaults?.string(forKey: key),
       let data = string.data(using: .utf8),
       let value = try? JSONSerialization.jsonObject(with: data) as? [String: [String: Any]]
+    else { return [:] }
+    return value
+  }
+
+  private static func jsonDictionaryValue(forKey key: String) -> [String: Any] {
+    guard
+      let string = defaults?.string(forKey: key),
+      let data = string.data(using: .utf8),
+      let value = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
     else { return [:] }
     return value
   }

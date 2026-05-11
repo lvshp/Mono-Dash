@@ -5,7 +5,12 @@
 "widget.intent.server.description" = "选择小组件展示的服务器。";
 "widget.intent.server.parameter" = "服务器";
 "widget.intent.style.parameter" = "卡片样式";
+"widget.intent.language.parameter" = "语言";
 "widget.intent.summary" = "显示 \(\.$server)，样式为 \(\.$cardStyle)";
+"widget.language.type" = "语言";
+"widget.language.follow_app" = "跟随 App";
+"widget.language.zh" = "简体中文";
+"widget.language.en" = "English";
 "widget.intent.refresh.title" = "刷新服务器";
 "widget.intent.refresh.server_id" = "服务器 ID";
 "widget.fallback.waiting" = "等待数据";

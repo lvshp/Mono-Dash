@@ -20,6 +20,7 @@ class AppIconSettingsPage extends ConsumerWidget {
     final selectedVariant =
         settingsAsync.valueOrNull?.appIconVariant ?? AppIconVariant.defaultIcon;
     final l10n = context.l10n;
+    final brightness = CupertinoTheme.brightnessOf(context);
 
     return FrostedScaffold(
       title: l10n.settings_appearance_appIconTitle,
@@ -74,7 +75,7 @@ class AppIconSettingsPage extends ConsumerWidget {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
                                 child: Image.asset(
-                                  variant.assetPath,
+                                  variant.effectiveAssetPath(brightness),
                                   width: 56,
                                   height: 56,
                                   fit: BoxFit.cover,
@@ -137,8 +138,11 @@ class AppIconSettingsPage extends ConsumerWidget {
     final unsupportedMessage = context.l10n.settings_appIcon_unsupported;
     final failedTitle = context.l10n.settings_appIcon_failedTitle;
     final okLabel = context.l10n.common_ok;
+    final iconName = variant.effectiveAlternateIconName(
+      CupertinoTheme.brightnessOf(context),
+    );
 
-    if (Platform.isAndroid && variant.alternateIconName != null) {
+    if (Platform.isAndroid && variant != AppIconVariant.defaultIcon) {
       showCupertinoDialog<void>(
         context: context,
         builder: (context) => CupertinoAlertDialog(
@@ -167,9 +171,7 @@ class AppIconSettingsPage extends ConsumerWidget {
         );
       }
 
-      await DynamicAppIconFlutterPlus.setAlternateIconName(
-        variant.alternateIconName,
-      );
+      await DynamicAppIconFlutterPlus.setAlternateIconName(iconName);
     } catch (error) {
       await controller.setAppIconVariant(previousVariant);
       if (!context.mounted) return;

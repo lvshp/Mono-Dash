@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart';
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -178,6 +179,9 @@ class ServersNotifier extends _$ServersNotifier {
       apiKeys: apiKeys,
       requestTimeoutSeconds: settings.requestTimeoutSeconds,
       customHeaders: settings.customHeaders,
+      appLocaleCode: ref
+          .read(localeControllerProvider)
+          .widgetLocaleCode(WidgetsBinding.instance.platformDispatcher.locale),
     );
   }
 }

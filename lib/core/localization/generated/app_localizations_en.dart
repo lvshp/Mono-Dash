@@ -3765,6 +3765,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_appIcon_dark => 'Dark';
 
   @override
+  String get settings_appIcon_adaptive => 'Adaptive';
+
+  @override
   String get settings_appIcon_hint =>
       'Tip: icon changes may take a moment on some system versions.';
 

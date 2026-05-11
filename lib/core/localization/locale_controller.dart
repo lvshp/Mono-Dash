@@ -65,4 +65,9 @@ extension AppLocaleOptionX on AppLocaleOption {
     AppLocaleOption.zh => '简体中文',
     AppLocaleOption.en => 'English',
   };
+
+  String widgetLocaleCode(Locale platformLocale) {
+    final locale = toLocale() ?? platformLocale;
+    return locale.languageCode == 'en' ? 'en' : 'zh';
+  }
 }

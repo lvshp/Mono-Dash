@@ -5,7 +5,12 @@
 "widget.intent.server.description" = "Choose the server shown by the widget.";
 "widget.intent.server.parameter" = "Server";
 "widget.intent.style.parameter" = "Card Style";
+"widget.intent.language.parameter" = "Language";
 "widget.intent.summary" = "Show \(\.$server) as \(\.$cardStyle)";
+"widget.language.type" = "Language";
+"widget.language.follow_app" = "Follow App";
+"widget.language.zh" = "Simplified Chinese";
+"widget.language.en" = "English";
 "widget.intent.refresh.title" = "Refresh Server";
 "widget.intent.refresh.server_id" = "Server ID";
 "widget.fallback.waiting" = "Waiting for data";

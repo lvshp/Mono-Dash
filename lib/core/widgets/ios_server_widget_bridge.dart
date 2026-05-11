@@ -20,6 +20,7 @@ class IosServerWidgetBridge {
     Map<int, String> apiKeys = const {},
     int requestTimeoutSeconds = 60,
     Map<String, String> customHeaders = const {},
+    String appLocaleCode = 'zh',
   }) async {
     if (!_isAvailable) return;
     await _invoke('syncServers', {
@@ -34,7 +35,15 @@ class IosServerWidgetBridge {
       'settings': {
         'requestTimeoutSeconds': requestTimeoutSeconds,
         'customHeaders': customHeaders,
+        'appLocaleCode': appLocaleCode,
       },
+    });
+  }
+
+  static Future<void> syncLocale(String appLocaleCode) async {
+    if (!_isAvailable) return;
+    await _invoke('syncSettings', {
+      'settings': {'appLocaleCode': appLocaleCode},
     });
   }
 

@@ -13,12 +13,47 @@ private let errorsKey = "server_widget_errors"
 private let settingsKey = "server_widget_settings"
 private let widgetKind = "ServerStatusWidget"
 
+struct WidgetLocalizer {
+  let code: String?
+
+  func string(_ key: String) -> String {
+    NSLocalizedString(key, bundle: bundle, comment: "")
+  }
+
+  func format(_ key: String, _ arguments: CVarArg...) -> String {
+    format(key, arguments: arguments)
+  }
+
+  func format(_ key: String, arguments: [CVarArg]) -> String {
+    String(format: string(key), locale: locale, arguments: arguments)
+  }
+
+  private var normalizedCode: String? {
+    guard let code else { return nil }
+    return code.lowercased().hasPrefix("en") ? "en" : "zh-Hans"
+  }
+
+  private var bundle: Bundle {
+    guard
+      let normalizedCode,
+      let path = Bundle.main.path(forResource: normalizedCode, ofType: "lproj"),
+      let bundle = Bundle(path: path)
+    else { return .main }
+    return bundle
+  }
+
+  private var locale: Locale {
+    guard let normalizedCode else { return .current }
+    return Locale(identifier: normalizedCode)
+  }
+}
+
 private func l10n(_ key: String) -> String {
-  NSLocalizedString(key, bundle: .main, comment: "")
+  WidgetLocalizer(code: WidgetStore.settings().appLocaleCode).string(key)
 }
 
 private func l10nFormat(_ key: String, _ arguments: CVarArg...) -> String {
-  String(format: l10n(key), locale: Locale.current, arguments: arguments)
+  WidgetLocalizer(code: WidgetStore.settings().appLocaleCode).format(key, arguments: arguments)
 }
 
 struct WidgetServer: Codable, Identifiable, Hashable {
@@ -44,10 +79,12 @@ struct WidgetServer: Codable, Identifiable, Hashable {
 struct WidgetSettings: Codable {
   let requestTimeoutSeconds: Int
   let customHeaders: [String: String]
+  let appLocaleCode: String?
 
   static let fallback = WidgetSettings(
     requestTimeoutSeconds: 60,
-    customHeaders: [:]
+    customHeaders: [:],
+    appLocaleCode: nil
   )
 }
 
@@ -534,6 +571,32 @@ enum ServerWidgetCardStyle: String, AppEnum {
   ]
 }
 
+enum ServerWidgetLanguage: String, AppEnum {
+  case followApp
+  case zh
+  case en
+
+  static var typeDisplayRepresentation = TypeDisplayRepresentation(
+    name: LocalizedStringResource("widget.language.type")
+  )
+  static var caseDisplayRepresentations: [ServerWidgetLanguage: DisplayRepresentation] = [
+    .followApp: DisplayRepresentation(title: LocalizedStringResource("widget.language.follow_app")),
+    .zh: DisplayRepresentation(title: LocalizedStringResource("widget.language.zh")),
+    .en: DisplayRepresentation(title: LocalizedStringResource("widget.language.en"))
+  ]
+
+  var resolvedCode: String? {
+    switch self {
+    case .followApp:
+      return WidgetStore.settings().appLocaleCode
+    case .zh:
+      return "zh"
+    case .en:
+      return "en"
+    }
+  }
+}
+
 struct ServerSelectionIntent: WidgetConfigurationIntent {
   static var title = LocalizedStringResource("widget.intent.server.title")
   static var description = IntentDescription("widget.intent.server.description")
@@ -543,6 +606,9 @@ struct ServerSelectionIntent: WidgetConfigurationIntent {
 
   @Parameter(title: "widget.intent.style.parameter", default: .simple)
   var cardStyle: ServerWidgetCardStyle
+
+  @Parameter(title: "widget.intent.language.parameter", default: .followApp)
+  var language: ServerWidgetLanguage
 
   static var parameterSummary: some ParameterSummary {
     Summary("Show \(\.$server) as \(\.$cardStyle)")
@@ -578,6 +644,7 @@ struct ServerEntry: TimelineEntry {
   let snapshot: ServerSnapshot?
   let errorMessage: String?
   let cardStyle: ServerWidgetCardStyle
+  let languageCode: String?
 }
 
 struct ServerStatusProvider: AppIntentTimelineProvider {
@@ -623,7 +690,8 @@ struct ServerStatusProvider: AppIntentTimelineProvider {
         updatedAt: Date()
       ),
       errorMessage: nil,
-      cardStyle: .simple
+      cardStyle: .simple,
+      languageCode: WidgetStore.settings().appLocaleCode
     )
   }
 
@@ -637,7 +705,8 @@ struct ServerStatusProvider: AppIntentTimelineProvider {
         server: nil,
         snapshot: nil,
         errorMessage: nil,
-        cardStyle: configuration.cardStyle
+        cardStyle: configuration.cardStyle,
+        languageCode: configuration.language.resolvedCode
       )
     }
     let snapshot = context.isPreview
@@ -648,7 +717,8 @@ struct ServerStatusProvider: AppIntentTimelineProvider {
       server: server,
       snapshot: snapshot,
       errorMessage: WidgetStore.selectedError(id: String(server.id)),
-      cardStyle: configuration.cardStyle
+      cardStyle: configuration.cardStyle,
+      languageCode: configuration.language.resolvedCode
     )
   }
 
@@ -664,7 +734,8 @@ struct ServerStatusProvider: AppIntentTimelineProvider {
             server: nil,
             snapshot: nil,
             errorMessage: nil,
-            cardStyle: configuration.cardStyle
+            cardStyle: configuration.cardStyle,
+            languageCode: configuration.language.resolvedCode
           )
         ],
         policy: .after(Date().addingTimeInterval(900))
@@ -677,7 +748,8 @@ struct ServerStatusProvider: AppIntentTimelineProvider {
       server: server,
       snapshot: snapshot,
       errorMessage: WidgetStore.selectedError(id: String(server.id)),
-      cardStyle: configuration.cardStyle
+      cardStyle: configuration.cardStyle,
+      languageCode: configuration.language.resolvedCode
     )
     return Timeline(entries: [entry], policy: .after(Date().addingTimeInterval(900)))
   }
@@ -686,6 +758,10 @@ struct ServerStatusProvider: AppIntentTimelineProvider {
 struct ServerStatusWidgetEntryView: View {
   @Environment(\.widgetFamily) private var family
   let entry: ServerEntry
+
+  private var strings: WidgetLocalizer {
+    WidgetLocalizer(code: entry.languageCode)
+  }
 
   var body: some View {
     Group {
@@ -705,33 +781,78 @@ struct ServerStatusWidgetEntryView: View {
 
   private func simpleServerCard(_ snapshot: ServerSnapshot) -> some View {
     let isSmall = family == .systemSmall
-    return VStack(alignment: .leading, spacing: isSmall ? 6 : 11) {
+    if isSmall {
+      return AnyView(smallServerCard(snapshot))
+    }
+    return AnyView(VStack(alignment: .leading, spacing: 11) {
       simpleHeader(snapshot)
       metricRows(snapshot)
       Divider()
       trafficTotalsRow(snapshot)
     }
-    .padding(.horizontal, isSmall ? 12 : 16)
-    .padding(.top, isSmall ? 10 : 18)
-    .padding(.bottom, isSmall ? 10 : 16)
+    .padding(.horizontal, 16)
+    .padding(.top, 18)
+    .padding(.bottom, 16)
+    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center))
+  }
+
+  private func smallServerCard(_ snapshot: ServerSnapshot) -> some View {
+    VStack(alignment: .leading, spacing: 9) {
+      smallHeader(snapshot)
+      smallMetricRows(snapshot)
+      Divider()
+      smallTrafficRows(snapshot)
+    }
+    .padding(.horizontal, 12)
+    .padding(.vertical, 12)
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+  }
+
+  private func smallHeader(_ snapshot: ServerSnapshot) -> some View {
+    let uptime = formatUptime(snapshot.uptimeSeconds ?? 0)
+
+    return HStack(spacing: 5) {
+      osIcon(snapshot.osName, size: 18)
+
+      VStack(alignment: .leading, spacing: 1) {
+        Text(snapshot.title)
+          .font(.system(.caption, design: .rounded).weight(.bold))
+          .lineLimit(1)
+
+        Text(uptime.isEmpty ? "--" : uptime)
+          .font(.system(size: 10, weight: .medium, design: .rounded))
+          .foregroundStyle(.secondary)
+          .lineLimit(1)
+      }
+
+      Spacer(minLength: 0)
+
+      Button(intent: RefreshServerIntent(serverId: String(snapshot.id))) {
+        Image(systemName: "arrow.clockwise")
+          .font(.system(size: 10, weight: .bold))
+          .foregroundStyle(.secondary)
+          .frame(width: 20, height: 20)
+          .background(.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 6))
+      }
+      .buttonStyle(.plain)
+    }
   }
 
   private func fallbackCard(_ server: WidgetServer, errorMessage: String?) -> some View {
     VStack(alignment: .leading, spacing: 12) {
       header(
         title: server.title,
-        subtitle: l10n("widget.fallback.waiting"),
+        subtitle: strings.string("widget.fallback.waiting"),
         osName: "Linux",
         latencyMs: nil
       )
-      Text(errorMessage ?? (WidgetStore.apiKey(serverId: server.id) == nil ? l10n("widget.fallback.open_app") : l10n("widget.fallback.tap_refresh")))
+      Text(errorMessage ?? (WidgetStore.apiKey(serverId: server.id) == nil ? strings.string("widget.fallback.open_app") : strings.string("widget.fallback.tap_refresh")))
         .font(.footnote.weight(.medium))
         .foregroundStyle(.secondary)
         .lineLimit(3)
       Spacer(minLength: 0)
       Button(intent: RefreshServerIntent(serverId: String(server.id))) {
-        Label(l10n("widget.action.refresh"), systemImage: "arrow.clockwise")
+        Label(strings.string("widget.action.refresh"), systemImage: "arrow.clockwise")
           .font(.caption.weight(.semibold))
       }
       .buttonStyle(.bordered)
@@ -744,9 +865,9 @@ struct ServerStatusWidgetEntryView: View {
       Image(systemName: "server.rack")
         .font(.title2.weight(.semibold))
         .foregroundStyle(.secondary)
-      Text(l10n("widget.empty.title"))
+      Text(strings.string("widget.empty.title"))
         .font(.headline)
-      Text(l10n("widget.empty.subtitle"))
+      Text(strings.string("widget.empty.subtitle"))
         .font(.footnote.weight(.medium))
         .foregroundStyle(.secondary)
       Spacer(minLength: 0)
@@ -783,10 +904,12 @@ struct ServerStatusWidgetEntryView: View {
         Text(title)
           .font(.headline.weight(.bold))
           .lineLimit(1)
+          .minimumScaleFactor(isSmall ? 0.72 : 0.9)
         Text(resolvedSubtitle.isEmpty ? "--" : resolvedSubtitle)
           .font(.caption2.weight(.medium))
           .foregroundStyle(.secondary)
           .lineLimit(1)
+          .minimumScaleFactor(isSmall ? 0.72 : 0.9)
       }
 
       Spacer(minLength: 0)
@@ -816,11 +939,71 @@ struct ServerStatusWidgetEntryView: View {
   private func metricRows(_ snapshot: ServerSnapshot) -> some View {
     VStack(spacing: family == .systemSmall ? 4 : 8) {
       metric(label: "CPU", value: snapshot.cpuPercent, tint: usageColor(snapshot.cpuPercent))
-      metric(label: l10n("widget.metric.memory"), value: snapshot.memoryPercent, tint: usageColor(snapshot.memoryPercent))
+      metric(label: strings.string("widget.metric.memory"), value: snapshot.memoryPercent, tint: usageColor(snapshot.memoryPercent))
       if let diskPercent = snapshot.diskPercent {
-        metric(label: l10n("widget.metric.disk"), value: diskPercent, tint: usageColor(diskPercent))
+        metric(label: strings.string("widget.metric.disk"), value: diskPercent, tint: usageColor(diskPercent))
       }
     }
+  }
+
+  private func compactMetricRow(_ snapshot: ServerSnapshot) -> some View {
+    HStack(spacing: 5) {
+      compactMetric("CPU", snapshot.cpuPercent, tint: usageColor(snapshot.cpuPercent))
+      compactMetric(strings.string("widget.metric.memory"), snapshot.memoryPercent, tint: usageColor(snapshot.memoryPercent))
+      if let diskPercent = snapshot.diskPercent {
+        compactMetric(strings.string("widget.metric.disk"), diskPercent, tint: usageColor(diskPercent))
+      }
+    }
+  }
+
+  private func compactMetric(_ label: String, _ value: Double, tint: Color) -> some View {
+    HStack(spacing: 3) {
+      Circle()
+        .fill(tint)
+        .frame(width: 5, height: 5)
+      Text(label)
+        .font(.caption2.weight(.bold))
+        .foregroundStyle(.secondary)
+      Text(percent(value))
+        .font(.caption2.monospacedDigit().weight(.semibold))
+    }
+    .lineLimit(1)
+    .minimumScaleFactor(0.68)
+    .frame(maxWidth: .infinity, alignment: .leading)
+  }
+
+  private func smallMetricRows(_ snapshot: ServerSnapshot) -> some View {
+    VStack(spacing: 6) {
+      smallMetric(label: "CPU", value: snapshot.cpuPercent, tint: usageColor(snapshot.cpuPercent))
+      smallMetric(label: strings.string("widget.metric.memory"), value: snapshot.memoryPercent, tint: usageColor(snapshot.memoryPercent))
+      if let diskPercent = snapshot.diskPercent {
+        smallMetric(label: strings.string("widget.metric.disk"), value: diskPercent, tint: usageColor(diskPercent))
+      }
+    }
+  }
+
+  private func smallMetric(label: String, value: Double, tint: Color) -> some View {
+    HStack(spacing: 6) {
+      Text(label)
+        .font(.system(size: 10, weight: .bold, design: .rounded))
+        .foregroundStyle(.secondary)
+        .frame(width: 28, alignment: .leading)
+
+      GeometryReader { proxy in
+        ZStack(alignment: .leading) {
+          Capsule().fill(.secondary.opacity(0.14))
+          Capsule()
+            .fill(tint)
+            .frame(width: proxy.size.width * min(max(value, 0), 100) / 100)
+        }
+      }
+      .frame(height: 5)
+
+      Text(percent(value))
+        .font(.system(size: 10, weight: .semibold, design: .rounded).monospacedDigit())
+        .frame(width: 34, alignment: .trailing)
+    }
+    .frame(height: 11)
   }
 
   private func metric(label: String, value: Double, tint: Color) -> some View {
@@ -846,14 +1029,80 @@ struct ServerStatusWidgetEntryView: View {
 
   private func trafficTotalsRow(_ snapshot: ServerSnapshot) -> some View {
     HStack(spacing: 8) {
-      trafficTotal(l10n("widget.traffic.up"), snapshot.netBytesSent, systemImage: "arrow.up")
+      trafficTotal(strings.string("widget.traffic.up"), snapshot.netBytesSent, systemImage: "arrow.up")
       separatorDot
-      trafficTotal(l10n("widget.traffic.down"), snapshot.netBytesRecv, systemImage: "arrow.down")
+      trafficTotal(strings.string("widget.traffic.down"), snapshot.netBytesRecv, systemImage: "arrow.down")
       separatorDot
-      trafficTotal(l10n("widget.traffic.total"), snapshot.totalTrafficBytes, systemImage: "sum")
+      trafficTotal(strings.string("widget.traffic.total"), snapshot.totalTrafficBytes, systemImage: "sum")
     }
     .lineLimit(1)
     .minimumScaleFactor(0.82)
+  }
+
+  private func compactTrafficRows(_ snapshot: ServerSnapshot) -> some View {
+    HStack(spacing: 6) {
+      smallTrafficTotal(snapshot.netBytesSent, systemImage: "arrow.up", accessibilityLabel: strings.string("widget.traffic.up"))
+      smallTrafficTotal(snapshot.netBytesRecv, systemImage: "arrow.down", accessibilityLabel: strings.string("widget.traffic.down"))
+    }
+    .lineLimit(1)
+  }
+
+  private func smallTrafficRows(_ snapshot: ServerSnapshot) -> some View {
+    HStack(spacing: 10) {
+      smallTrafficBlock(
+        label: strings.string("widget.traffic.up"),
+        value: snapshot.netBytesSent,
+        systemImage: "arrow.up.circle.fill",
+        tint: .green
+      )
+      smallTrafficBlock(
+        label: strings.string("widget.traffic.down"),
+        value: snapshot.netBytesRecv,
+        systemImage: "arrow.down.circle.fill",
+        tint: .blue
+      )
+    }
+    .frame(maxWidth: .infinity)
+  }
+
+  private func smallTrafficBlock(
+    label: String,
+    value: Int64,
+    systemImage: String,
+    tint: Color
+  ) -> some View {
+    VStack(alignment: .leading, spacing: 1) {
+      Text(label)
+        .font(.system(size: 10, weight: .medium, design: .rounded))
+        .foregroundStyle(.secondary)
+
+      HStack(spacing: 4) {
+        Image(systemName: systemImage)
+          .font(.caption)
+          .foregroundStyle(tint)
+        Text(bytes(value))
+          .font(.system(size: 13, weight: .bold, design: .rounded).monospacedDigit())
+          .lineLimit(1)
+          .minimumScaleFactor(0.78)
+      }
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
+  }
+
+  private func smallTrafficTotal(
+    _ value: Int64,
+    systemImage: String,
+    accessibilityLabel: String
+  ) -> some View {
+    HStack(spacing: 3) {
+      Image(systemName: systemImage)
+        .font(.caption2.weight(.bold))
+        .foregroundStyle(.secondary)
+      Text(bytes(value))
+        .font(.caption2.monospacedDigit().weight(.bold))
+    }
+    .accessibilityLabel("\(accessibilityLabel) \(bytes(value))")
+    .frame(maxWidth: .infinity, alignment: .center)
   }
 
   private func trafficTotal(
@@ -895,11 +1144,11 @@ struct ServerStatusWidgetEntryView: View {
     return .green
   }
 
-  private func osIcon(_ value: String) -> some View {
+  private func osIcon(_ value: String, size: CGFloat = 34) -> some View {
     Image(osAssetName(value))
       .resizable()
       .scaledToFit()
-      .frame(width: 34, height: 34)
+      .frame(width: size, height: size)
   }
 
   private func osAssetName(_ value: String) -> String {
@@ -938,9 +1187,9 @@ struct ServerStatusWidgetEntryView: View {
     let days = seconds / 86_400
     let hours = (seconds % 86_400) / 3_600
     let minutes = (seconds % 3_600) / 60
-    if days > 0 { return l10nFormat("widget.uptime.days_hours", days, hours) }
-    if hours > 0 { return l10nFormat("widget.uptime.hours_minutes", hours, minutes) }
-    return l10nFormat("widget.uptime.minutes", minutes)
+    if days > 0 { return strings.format("widget.uptime.days_hours", days, hours) }
+    if hours > 0 { return strings.format("widget.uptime.hours_minutes", hours, minutes) }
+    return strings.format("widget.uptime.minutes", minutes)
   }
 }
 
