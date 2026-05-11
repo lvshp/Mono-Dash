@@ -11,7 +11,17 @@ private let serversKey = "server_widget_servers"
 private let snapshotsKey = "server_widget_snapshots"
 private let errorsKey = "server_widget_errors"
 private let settingsKey = "server_widget_settings"
-private let widgetKind = "ServerStatusWidget"
+private let revealedIPServerIdsKey = "server_widget_revealed_ip_server_ids"
+private let skipNextFetchServerIdsKey = "server_widget_skip_next_fetch_server_ids"
+private let simpleWidgetKind = "ServerStatusWidget"
+private let horizontalMetricsWidgetKind = "ServerStatusWidgetHorizontalMetrics"
+private let serverWidgetKinds = [simpleWidgetKind, horizontalMetricsWidgetKind]
+
+private func reloadServerWidgetTimelines() {
+  for kind in serverWidgetKinds {
+    WidgetCenter.shared.reloadTimelines(ofKind: kind)
+  }
+}
 
 struct WidgetLocalizer {
   let code: String?
@@ -56,6 +66,17 @@ private func l10nFormat(_ key: String, _ arguments: CVarArg...) -> String {
   WidgetLocalizer(code: WidgetStore.settings().appLocaleCode).format(key, arguments: arguments)
 }
 
+extension View {
+  @ViewBuilder
+  func numericTextTransition() -> some View {
+    if #available(iOSApplicationExtension 17.0, *) {
+      self.contentTransition(.numericText())
+    } else {
+      self
+    }
+  }
+}
+
 struct WidgetServer: Codable, Identifiable, Hashable {
   let id: Int
   let name: String?
@@ -79,11 +100,13 @@ struct WidgetServer: Codable, Identifiable, Hashable {
 struct WidgetSettings: Codable {
   let requestTimeoutSeconds: Int
   let customHeaders: [String: String]
+  let userAgent: String?
   let appLocaleCode: String?
 
   static let fallback = WidgetSettings(
     requestTimeoutSeconds: 60,
     customHeaders: [:],
+    userAgent: nil,
     appLocaleCode: nil
   )
 }
@@ -99,6 +122,7 @@ struct ServerSnapshot: Codable, Identifiable {
   let sortIndex: Int
   let title: String
   let subtitle: String
+  let ipAddress: String?
   let osName: String
   let uptimeSeconds: Int?
   let cpuPercent: Double
@@ -182,6 +206,37 @@ struct WidgetStore {
     var errors = errors()
     errors.removeValue(forKey: String(serverId))
     saveErrors(errors)
+  }
+
+  static func isIPVisible(serverId: Int) -> Bool {
+    let ids = defaults?.stringArray(forKey: revealedIPServerIdsKey) ?? []
+    return ids.contains(String(serverId))
+  }
+
+  static func toggleIPVisibility(serverId: Int) {
+    var ids = Set(defaults?.stringArray(forKey: revealedIPServerIdsKey) ?? [])
+    let key = String(serverId)
+    if ids.contains(key) {
+      ids.remove(key)
+    } else {
+      ids.insert(key)
+    }
+    defaults?.set(Array(ids).sorted(), forKey: revealedIPServerIdsKey)
+  }
+
+  static func skipNextFetch(serverId: Int) {
+    var ids = Set(defaults?.stringArray(forKey: skipNextFetchServerIdsKey) ?? [])
+    ids.insert(String(serverId))
+    defaults?.set(Array(ids).sorted(), forKey: skipNextFetchServerIdsKey)
+  }
+
+  static func consumeSkipNextFetch(serverId: Int) -> Bool {
+    var ids = Set(defaults?.stringArray(forKey: skipNextFetchServerIdsKey) ?? [])
+    let key = String(serverId)
+    guard ids.contains(key) else { return false }
+    ids.remove(key)
+    defaults?.set(Array(ids).sorted(), forKey: skipNextFetchServerIdsKey)
+    return true
   }
 
   static func apiKey(serverId: Int) -> String? {
@@ -346,7 +401,8 @@ enum ServerWidgetFetcher {
     request.timeoutInterval = TimeInterval(max(5, min(settings.requestTimeoutSeconds, 300)))
     request.setValue("application/json", forHTTPHeaderField: "Accept")
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    request.setValue("MonoDashWidget/1.0", forHTTPHeaderField: "User-Agent")
+    let userAgent = settings.userAgent?.trimmingCharacters(in: .whitespacesAndNewlines)
+    request.setValue(userAgent?.isEmpty == false ? userAgent! : "Mono-Dash-Widget/1.0", forHTTPHeaderField: "User-Agent")
     for (key, value) in settings.customHeaders where key.lowercased() != "user-agent" {
       request.setValue(value, forHTTPHeaderField: key)
     }
@@ -421,6 +477,7 @@ enum ServerWidgetFetcher {
       sortIndex: server.sortIndex,
       title: title,
       subtitle: subtitle.isEmpty ? "\(server.host):\(server.port)" : subtitle,
+      ipAddress: ip.isEmpty ? nil : ip,
       osName: osName(base),
       uptimeSeconds: int(current["uptime"]),
       cpuPercent: double(current["cpuUsedPercent"]),
@@ -562,12 +619,14 @@ struct ServerEntityQuery: EntityStringQuery {
 
 enum ServerWidgetCardStyle: String, AppEnum {
   case simple
+  case horizontalMetrics
 
   static var typeDisplayRepresentation = TypeDisplayRepresentation(
     name: LocalizedStringResource("widget.card.style.type")
   )
   static var caseDisplayRepresentations: [ServerWidgetCardStyle: DisplayRepresentation] = [
-    .simple: DisplayRepresentation(title: LocalizedStringResource("widget.card.style.simple"))
+    .simple: DisplayRepresentation(title: LocalizedStringResource("widget.card.style.simple")),
+    .horizontalMetrics: DisplayRepresentation(title: LocalizedStringResource("widget.card.style.horizontal_metrics"))
   ]
 }
 
@@ -604,14 +663,11 @@ struct ServerSelectionIntent: WidgetConfigurationIntent {
   @Parameter(title: "widget.intent.server.parameter")
   var server: ServerEntity?
 
-  @Parameter(title: "widget.intent.style.parameter", default: .simple)
-  var cardStyle: ServerWidgetCardStyle
-
   @Parameter(title: "widget.intent.language.parameter", default: .followApp)
   var language: ServerWidgetLanguage
 
   static var parameterSummary: some ParameterSummary {
-    Summary("Show \(\.$server) as \(\.$cardStyle)")
+    Summary("Show \(\.$server)")
   }
 }
 
@@ -632,7 +688,31 @@ struct RefreshServerIntent: AppIntent {
   func perform() async throws -> some IntentResult {
     if let server = WidgetStore.selectedServer(id: serverId) {
       _ = await ServerWidgetFetcher.fetch(server: server)
-      WidgetCenter.shared.reloadTimelines(ofKind: widgetKind)
+      reloadServerWidgetTimelines()
+    }
+    return .result()
+  }
+}
+
+struct ToggleServerIPVisibilityIntent: AppIntent {
+  static var title = LocalizedStringResource("widget.intent.toggle_ip.title")
+
+  @Parameter(title: "widget.intent.refresh.server_id")
+  var serverId: String
+
+  init() {
+    serverId = ""
+  }
+
+  init(serverId: String) {
+    self.serverId = serverId
+  }
+
+  func perform() async throws -> some IntentResult {
+    if let id = Int(serverId) {
+      WidgetStore.toggleIPVisibility(serverId: id)
+      WidgetStore.skipNextFetch(serverId: id)
+      reloadServerWidgetTimelines()
     }
     return .result()
   }
@@ -648,6 +728,12 @@ struct ServerEntry: TimelineEntry {
 }
 
 struct ServerStatusProvider: AppIntentTimelineProvider {
+  let cardStyle: ServerWidgetCardStyle
+
+  init(cardStyle: ServerWidgetCardStyle) {
+    self.cardStyle = cardStyle
+  }
+
   func placeholder(in context: Context) -> ServerEntry {
     ServerEntry(
       date: Date(),
@@ -672,6 +758,7 @@ struct ServerStatusProvider: AppIntentTimelineProvider {
         sortIndex: 0,
         title: "Mono Dash",
         subtitle: "Ubuntu  |  10.0.0.2",
+        ipAddress: "10.0.0.2",
         osName: "Ubuntu",
         uptimeSeconds: 183_600,
         cpuPercent: 24,
@@ -690,7 +777,7 @@ struct ServerStatusProvider: AppIntentTimelineProvider {
         updatedAt: Date()
       ),
       errorMessage: nil,
-      cardStyle: .simple,
+      cardStyle: cardStyle,
       languageCode: WidgetStore.settings().appLocaleCode
     )
   }
@@ -705,7 +792,7 @@ struct ServerStatusProvider: AppIntentTimelineProvider {
         server: nil,
         snapshot: nil,
         errorMessage: nil,
-        cardStyle: configuration.cardStyle,
+        cardStyle: cardStyle,
         languageCode: configuration.language.resolvedCode
       )
     }
@@ -717,7 +804,7 @@ struct ServerStatusProvider: AppIntentTimelineProvider {
       server: server,
       snapshot: snapshot,
       errorMessage: WidgetStore.selectedError(id: String(server.id)),
-      cardStyle: configuration.cardStyle,
+      cardStyle: cardStyle,
       languageCode: configuration.language.resolvedCode
     )
   }
@@ -734,7 +821,7 @@ struct ServerStatusProvider: AppIntentTimelineProvider {
             server: nil,
             snapshot: nil,
             errorMessage: nil,
-            cardStyle: configuration.cardStyle,
+            cardStyle: cardStyle,
             languageCode: configuration.language.resolvedCode
           )
         ],
@@ -742,13 +829,16 @@ struct ServerStatusProvider: AppIntentTimelineProvider {
       )
     }
 
-    let snapshot = await ServerWidgetFetcher.fetch(server: server)
+    let cachedSnapshot = WidgetStore.selectedSnapshot(id: String(server.id)).1
+    let snapshot = WidgetStore.consumeSkipNextFetch(serverId: server.id)
+      ? cachedSnapshot
+      : await ServerWidgetFetcher.fetch(server: server)
     let entry = ServerEntry(
       date: Date(),
       server: server,
       snapshot: snapshot,
       errorMessage: WidgetStore.selectedError(id: String(server.id)),
-      cardStyle: configuration.cardStyle,
+      cardStyle: cardStyle,
       languageCode: configuration.language.resolvedCode
     )
     return Timeline(entries: [entry], policy: .after(Date().addingTimeInterval(900)))
@@ -756,10 +846,10 @@ struct ServerStatusProvider: AppIntentTimelineProvider {
 }
 
 struct ServerStatusWidgetEntryView: View {
-  @Environment(\.widgetFamily) private var family
+  @Environment(\.widgetFamily) var family
   let entry: ServerEntry
 
-  private var strings: WidgetLocalizer {
+  var strings: WidgetLocalizer {
     WidgetLocalizer(code: entry.languageCode)
   }
 
@@ -769,6 +859,8 @@ struct ServerStatusWidgetEntryView: View {
         switch entry.cardStyle {
         case .simple:
           simpleServerCard(snapshot)
+        case .horizontalMetrics:
+          horizontalMetricsServerCard(snapshot)
         }
       } else if let server = entry.server {
         fallbackCard(server, errorMessage: entry.errorMessage)
@@ -779,49 +871,21 @@ struct ServerStatusWidgetEntryView: View {
     .containerBackground(.background, for: .widget)
   }
 
-  private func simpleServerCard(_ snapshot: ServerSnapshot) -> some View {
-    let isSmall = family == .systemSmall
-    if isSmall {
-      return AnyView(smallServerCard(snapshot))
-    }
-    return AnyView(VStack(alignment: .leading, spacing: 11) {
-      simpleHeader(snapshot)
-      metricRows(snapshot)
-      Divider()
-      trafficTotalsRow(snapshot)
-    }
-    .padding(.horizontal, 16)
-    .padding(.top, 18)
-    .padding(.bottom, 16)
-    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center))
-  }
-
-  private func smallServerCard(_ snapshot: ServerSnapshot) -> some View {
-    VStack(alignment: .leading, spacing: 9) {
-      smallHeader(snapshot)
-      smallMetricRows(snapshot)
-      Divider()
-      smallTrafficRows(snapshot)
-    }
-    .padding(.horizontal, 12)
-    .padding(.vertical, 12)
-    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-  }
-
-  private func smallHeader(_ snapshot: ServerSnapshot) -> some View {
+  func smallHeader(_ snapshot: ServerSnapshot) -> some View {
     let uptime = formatUptime(snapshot.uptimeSeconds ?? 0)
 
     return HStack(spacing: 5) {
-      osIcon(snapshot.osName, size: 18)
+      osIcon(snapshot.osName, size: 20)
 
       VStack(alignment: .leading, spacing: 1) {
         Text(snapshot.title)
-          .font(.system(.caption, design: .rounded).weight(.bold))
+          .font(.system(size: 14, weight: .bold, design: .rounded))
           .lineLimit(1)
 
         Text(uptime.isEmpty ? "--" : uptime)
-          .font(.system(size: 10, weight: .medium, design: .rounded))
+          .font(.system(size: 10.5, weight: .medium, design: .rounded))
           .foregroundStyle(.secondary)
+          .numericTextTransition()
           .lineLimit(1)
       }
 
@@ -875,14 +939,88 @@ struct ServerStatusWidgetEntryView: View {
     .padding(16)
   }
 
-  private func simpleHeader(_ snapshot: ServerSnapshot) -> some View {
-    header(
-      title: snapshot.title,
-      subtitle: simpleSubtitle(snapshot),
-      osName: snapshot.osName,
-      latencyMs: snapshot.latencyMs,
-      serverId: snapshot.id
-    )
+  @ViewBuilder
+  func simpleHeader(_ snapshot: ServerSnapshot) -> some View {
+    if family == .systemMedium {
+      mediumHeader(snapshot)
+    } else {
+      header(
+        title: snapshot.title,
+        subtitle: simpleSubtitle(snapshot),
+        osName: snapshot.osName,
+        latencyMs: snapshot.latencyMs,
+        serverId: snapshot.id
+      )
+    }
+  }
+
+  private func mediumHeader(_ snapshot: ServerSnapshot) -> some View {
+    let ip = displayIPAddress(snapshot)
+    let isIPVisible = WidgetStore.isIPVisible(serverId: snapshot.id)
+
+    return HStack(spacing: 10) {
+      osIcon(snapshot.osName)
+
+      VStack(alignment: .leading, spacing: 3) {
+        Text(snapshot.title)
+          .font(.headline.weight(.bold))
+          .lineLimit(1)
+          .minimumScaleFactor(0.9)
+
+        HStack(spacing: 5) {
+          ipAddressText(ip: ip, isVisible: isIPVisible)
+
+          Button(intent: ToggleServerIPVisibilityIntent(serverId: String(snapshot.id))) {
+            Image(systemName: isIPVisible ? "eye.slash" : "eye")
+              .font(.caption2.weight(.bold))
+              .foregroundStyle(.secondary)
+              .frame(width: 18, height: 18)
+          }
+          .buttonStyle(.plain)
+        }
+      }
+
+      Spacer(minLength: 0)
+
+      mediumActions(snapshot)
+    }
+  }
+
+  private func mediumActions(_ snapshot: ServerSnapshot) -> some View {
+    HStack(spacing: 6) {
+      HStack(spacing: 3) {
+        Image(systemName: "timer")
+          .font(.caption2.weight(.bold))
+        Text("\(snapshot.latencyMs)ms")
+          .font(.caption2.weight(.bold))
+          .numericTextTransition()
+      }
+      .foregroundStyle(snapshot.latencyMs > 500 ? .orange : .green)
+      .padding(.horizontal, 7)
+      .padding(.vertical, 4)
+      .background((snapshot.latencyMs > 500 ? Color.orange : Color.green).opacity(0.1), in: RoundedRectangle(cornerRadius: 6))
+
+      Button(intent: RefreshServerIntent(serverId: String(snapshot.id))) {
+        Image(systemName: "arrow.clockwise")
+          .font(.caption.weight(.bold))
+          .foregroundStyle(.secondary)
+          .frame(width: 24, height: 24)
+          .background(.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 6))
+      }
+      .buttonStyle(.plain)
+    }
+  }
+
+  private func ipAddressText(ip: String, isVisible: Bool) -> some View {
+    Text(ip)
+      .font(.caption2.monospacedDigit().weight(.medium))
+      .foregroundStyle(.secondary)
+      .lineLimit(1)
+      .minimumScaleFactor(0.82)
+      .blur(radius: isVisible ? 0 : 3.2, opaque: false)
+      .opacity(isVisible ? 1 : 0.62)
+      .saturation(isVisible ? 1 : 0.25)
+      .animation(.easeInOut(duration: 0.18), value: isVisible)
   }
 
   private func header(
@@ -918,6 +1056,7 @@ struct ServerStatusWidgetEntryView: View {
         Text("\(latencyMs)ms")
           .font(.caption2.weight(.bold))
           .foregroundStyle(latencyMs > 500 ? .orange : .green)
+          .numericTextTransition()
           .padding(.horizontal, 7)
           .padding(.vertical, 4)
           .background((latencyMs > 500 ? Color.orange : Color.green).opacity(0.1), in: RoundedRectangle(cornerRadius: 6))
@@ -936,7 +1075,7 @@ struct ServerStatusWidgetEntryView: View {
     }
   }
 
-  private func metricRows(_ snapshot: ServerSnapshot) -> some View {
+  func metricRows(_ snapshot: ServerSnapshot) -> some View {
     VStack(spacing: family == .systemSmall ? 4 : 8) {
       metric(label: "CPU", value: snapshot.cpuPercent, tint: usageColor(snapshot.cpuPercent))
       metric(label: strings.string("widget.metric.memory"), value: snapshot.memoryPercent, tint: usageColor(snapshot.memoryPercent))
@@ -966,13 +1105,14 @@ struct ServerStatusWidgetEntryView: View {
         .foregroundStyle(.secondary)
       Text(percent(value))
         .font(.caption2.monospacedDigit().weight(.semibold))
+        .numericTextTransition()
     }
     .lineLimit(1)
     .minimumScaleFactor(0.68)
     .frame(maxWidth: .infinity, alignment: .leading)
   }
 
-  private func smallMetricRows(_ snapshot: ServerSnapshot) -> some View {
+  func smallMetricRows(_ snapshot: ServerSnapshot) -> some View {
     VStack(spacing: 6) {
       smallMetric(label: "CPU", value: snapshot.cpuPercent, tint: usageColor(snapshot.cpuPercent))
       smallMetric(label: strings.string("widget.metric.memory"), value: snapshot.memoryPercent, tint: usageColor(snapshot.memoryPercent))
@@ -1001,6 +1141,7 @@ struct ServerStatusWidgetEntryView: View {
 
       Text(percent(value))
         .font(.system(size: 10, weight: .semibold, design: .rounded).monospacedDigit())
+        .numericTextTransition()
         .frame(width: 34, alignment: .trailing)
     }
     .frame(height: 11)
@@ -1023,17 +1164,16 @@ struct ServerStatusWidgetEntryView: View {
       .frame(height: 6)
       Text(percent(value))
         .font(.caption2.monospacedDigit().weight(.semibold))
+        .numericTextTransition()
         .frame(width: 36, alignment: .trailing)
     }
   }
 
-  private func trafficTotalsRow(_ snapshot: ServerSnapshot) -> some View {
-    HStack(spacing: 8) {
-      trafficTotal(strings.string("widget.traffic.up"), snapshot.netBytesSent, systemImage: "arrow.up")
-      separatorDot
-      trafficTotal(strings.string("widget.traffic.down"), snapshot.netBytesRecv, systemImage: "arrow.down")
-      separatorDot
-      trafficTotal(strings.string("widget.traffic.total"), snapshot.totalTrafficBytes, systemImage: "sum")
+  func trafficTotalsRow(_ snapshot: ServerSnapshot) -> some View {
+    HStack(spacing: 10) {
+      trafficTotal(strings.string("widget.traffic.up"), snapshot.netBytesSent, systemImage: "arrow.up", tint: .green)
+      trafficTotal(strings.string("widget.traffic.down"), snapshot.netBytesRecv, systemImage: "arrow.down", tint: .blue)
+      uptimeTotal(snapshot)
     }
     .lineLimit(1)
     .minimumScaleFactor(0.82)
@@ -1041,13 +1181,13 @@ struct ServerStatusWidgetEntryView: View {
 
   private func compactTrafficRows(_ snapshot: ServerSnapshot) -> some View {
     HStack(spacing: 6) {
-      smallTrafficTotal(snapshot.netBytesSent, systemImage: "arrow.up", accessibilityLabel: strings.string("widget.traffic.up"))
-      smallTrafficTotal(snapshot.netBytesRecv, systemImage: "arrow.down", accessibilityLabel: strings.string("widget.traffic.down"))
+      smallTrafficTotal(snapshot.netBytesSent, systemImage: "arrow.up", tint: .green, accessibilityLabel: strings.string("widget.traffic.up"))
+      smallTrafficTotal(snapshot.netBytesRecv, systemImage: "arrow.down", tint: .blue, accessibilityLabel: strings.string("widget.traffic.down"))
     }
     .lineLimit(1)
   }
 
-  private func smallTrafficRows(_ snapshot: ServerSnapshot) -> some View {
+  func smallTrafficRows(_ snapshot: ServerSnapshot) -> some View {
     HStack(spacing: 10) {
       smallTrafficBlock(
         label: strings.string("widget.traffic.up"),
@@ -1082,6 +1222,7 @@ struct ServerStatusWidgetEntryView: View {
           .foregroundStyle(tint)
         Text(bytes(value))
           .font(.system(size: 13, weight: .bold, design: .rounded).monospacedDigit())
+          .numericTextTransition()
           .lineLimit(1)
           .minimumScaleFactor(0.78)
       }
@@ -1092,14 +1233,16 @@ struct ServerStatusWidgetEntryView: View {
   private func smallTrafficTotal(
     _ value: Int64,
     systemImage: String,
+    tint: Color,
     accessibilityLabel: String
   ) -> some View {
     HStack(spacing: 3) {
       Image(systemName: systemImage)
         .font(.caption2.weight(.bold))
-        .foregroundStyle(.secondary)
+        .foregroundStyle(tint)
       Text(bytes(value))
         .font(.caption2.monospacedDigit().weight(.bold))
+        .numericTextTransition()
     }
     .accessibilityLabel("\(accessibilityLabel) \(bytes(value))")
     .frame(maxWidth: .infinity, alignment: .center)
@@ -1108,17 +1251,35 @@ struct ServerStatusWidgetEntryView: View {
   private func trafficTotal(
     _ label: String,
     _ value: Int64,
-    systemImage: String
+    systemImage: String,
+    tint: Color
   ) -> some View {
     HStack(spacing: 3) {
       Image(systemName: systemImage)
         .font(.caption.weight(.bold))
-        .foregroundStyle(.secondary)
+        .foregroundStyle(tint)
       Text(label)
         .font(.caption.weight(.semibold))
         .foregroundStyle(.secondary)
       Text(bytes(value))
         .font(.caption.monospacedDigit().weight(.bold))
+        .numericTextTransition()
+    }
+  }
+
+  private func uptimeTotal(_ snapshot: ServerSnapshot) -> some View {
+    let uptime = formatUptime(snapshot.uptimeSeconds ?? 0)
+
+    return HStack(spacing: 3) {
+      Image(systemName: "clock")
+        .font(.caption.weight(.bold))
+        .foregroundStyle(.indigo)
+      Text(strings.string("widget.uptime.label"))
+        .font(.caption.weight(.semibold))
+        .foregroundStyle(.secondary)
+      Text(uptime.isEmpty ? "--" : uptime)
+        .font(.caption.monospacedDigit().weight(.bold))
+        .numericTextTransition()
     }
   }
 
@@ -1138,7 +1299,18 @@ struct ServerStatusWidgetEntryView: View {
     return uptime.isEmpty ? os : "\(os) · \(uptime)"
   }
 
-  private func usageColor(_ value: Double) -> Color {
+  private func displayIPAddress(_ snapshot: ServerSnapshot) -> String {
+    if let ipAddress = snapshot.ipAddress, !ipAddress.isEmpty {
+      return ipAddress
+    }
+    let pieces = snapshot.subtitle.components(separatedBy: "  |  ")
+    if pieces.count > 1, !pieces[1].isEmpty {
+      return pieces[1]
+    }
+    return snapshot.host.isEmpty ? "--" : snapshot.host
+  }
+
+  func usageColor(_ value: Double) -> Color {
     if value >= 85 { return .red }
     if value >= 60 { return .orange }
     return .green
@@ -1162,14 +1334,14 @@ struct ServerStatusWidgetEntryView: View {
     return "Linux"
   }
 
-  private func percent(_ value: Double) -> String {
+  func percent(_ value: Double) -> String {
     let clamped = min(max(value, 0), 100)
     return clamped >= 10
       ? "\(Int(clamped.rounded()))%"
       : String(format: "%.1f%%", clamped)
   }
 
-  private func bytes(_ value: Int64) -> String {
+  func bytes(_ value: Int64) -> String {
     let units = ["B", "KB", "MB", "GB", "TB"]
     var amount = Double(max(value, 0))
     var index = 0
@@ -1194,18 +1366,36 @@ struct ServerStatusWidgetEntryView: View {
 }
 
 struct ServerStatusWidget: Widget {
-  let kind = widgetKind
+  let kind = simpleWidgetKind
 
   var body: some WidgetConfiguration {
     AppIntentConfiguration(
       kind: kind,
       intent: ServerSelectionIntent.self,
-      provider: ServerStatusProvider()
+      provider: ServerStatusProvider(cardStyle: .simple)
     ) { entry in
       ServerStatusWidgetEntryView(entry: entry)
     }
-    .configurationDisplayName("widget.display.name")
-    .description("widget.display.description")
+    .configurationDisplayName("widget.display.name.simple")
+    .description("widget.display.description.simple")
+    .supportedFamilies([.systemSmall, .systemMedium])
+    .contentMarginsDisabled()
+  }
+}
+
+struct ServerStatusHorizontalMetricsWidget: Widget {
+  let kind = horizontalMetricsWidgetKind
+
+  var body: some WidgetConfiguration {
+    AppIntentConfiguration(
+      kind: kind,
+      intent: ServerSelectionIntent.self,
+      provider: ServerStatusProvider(cardStyle: .horizontalMetrics)
+    ) { entry in
+      ServerStatusWidgetEntryView(entry: entry)
+    }
+    .configurationDisplayName("widget.display.name.horizontal_metrics")
+    .description("widget.display.description.horizontal_metrics")
     .supportedFamilies([.systemSmall, .systemMedium])
     .contentMarginsDisabled()
   }
@@ -1215,5 +1405,6 @@ struct ServerStatusWidget: Widget {
 struct ServerStatusWidgetBundle: WidgetBundle {
   var body: some Widget {
     ServerStatusWidget()
+    ServerStatusHorizontalMetricsWidget()
   }
 }

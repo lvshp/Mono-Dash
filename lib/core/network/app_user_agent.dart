@@ -6,16 +6,27 @@ class AppUserAgent {
   AppUserAgent._();
 
   static const productToken = 'Mono-Dash';
+  static const widgetProductToken = 'Mono-Dash-Widget';
   static const displayName = 'Mono Dash';
   static const _fallbackVersion = '1.0.0';
 
   static Future<String>? _cached;
+  static Future<String>? _widgetCached;
 
-  static Future<String> get value => _cached ??= _build();
+  static Future<String> get value =>
+      _cached ??= _build(productToken: productToken);
 
-  static Future<String> _build() async {
+  static Future<String> get widgetValue => _widgetCached ??= _build(
+    productToken: widgetProductToken,
+    platformLabel: 'iOS Widget',
+  );
+
+  static Future<String> _build({
+    required String productToken,
+    String? platformLabel,
+  }) async {
     final version = await _version();
-    final platform = _platformLabel();
+    final platform = platformLabel ?? _platformLabel();
     final osVersion = _commentValue(Platform.operatingSystemVersion);
 
     return '$productToken/$version ($platform; $osVersion)';

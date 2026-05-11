@@ -1,5 +1,6 @@
 "widget.card.style.type" = "Card Style";
 "widget.card.style.simple" = "Simple";
+"widget.card.style.horizontal_metrics" = "Horizontal Metrics";
 "widget.intent.server.type" = "Server";
 "widget.intent.server.title" = "Server";
 "widget.intent.server.description" = "Choose the server shown by the widget.";
@@ -13,6 +14,7 @@
 "widget.language.en" = "English";
 "widget.intent.refresh.title" = "Refresh Server";
 "widget.intent.refresh.server_id" = "Server ID";
+"widget.intent.toggle_ip.title" = "Show or Hide IP";
 "widget.fallback.waiting" = "Waiting for data";
 "widget.fallback.open_app" = "Open Mono Dash once to enable widget refresh.";
 "widget.fallback.tap_refresh" = "Tap refresh to fetch this server.";
@@ -24,6 +26,7 @@
 "widget.traffic.up" = "Up";
 "widget.traffic.down" = "Down";
 "widget.traffic.total" = "Total";
+"widget.uptime.label" = "Uptime";
 "widget.uptime.days_hours" = "%dd %dh";
 "widget.uptime.hours_minutes" = "%dh %dm";
 "widget.uptime.minutes" = "%dm";
@@ -32,3 +35,7 @@
 "widget.error.api_code" = "API code %d";
 "widget.display.name" = "Mono Dash Server";
 "widget.display.description" = "Show and refresh a selected server status card.";
+"widget.display.name.simple" = "Mono Dash Server";
+"widget.display.description.simple" = "Simple server status card.";
+"widget.display.name.horizontal_metrics" = "Mono Dash Server Metrics";
+"widget.display.description.horizontal_metrics" = "Server status card with horizontal CPU, memory, and disk metrics.";

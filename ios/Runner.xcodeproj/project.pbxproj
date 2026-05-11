@@ -21,6 +21,8 @@
 		A4E7AC911A5D4F3E80D9B75C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A4E7AC901A5D4F3E80D9B75C /* Assets.xcassets */; };
 		A4E7AC955D2F4E199F079B2C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A4E7AC945D2F4E199F079B2C /* Localizable.strings */; };
 		B972D53AEF707CB630677405 /* ServerStatusWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D68CCB9A544FE1CC82DC1E5 /* ServerStatusWidget.swift */; };
+		4F1A00100000000000000001 /* ServerStatusWidgetSimpleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1A00110000000000000001 /* ServerStatusWidgetSimpleStyle.swift */; };
+		4F1A00200000000000000001 /* ServerStatusWidgetHorizontalMetricsStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1A00210000000000000001 /* ServerStatusWidgetHorizontalMetricsStyle.swift */; };
 		D0DA84AA339E4F864212C4BB /* ServerStatusWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 352EADBB0169464A7E886190 /* ServerStatusWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E8D269946616938DA21FB4B8 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50C0E8586D0DF805F22613C8 /* Pods_RunnerTests.framework */; };
 		FCF507B5AFD7E4E3D4CF144E /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63492E89C6129C6799A17A6D /* Pods_Runner.framework */; };
@@ -77,6 +79,8 @@
 		331C8081294A63A400263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		352EADBB0169464A7E886190 /* ServerStatusWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ServerStatusWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D68CCB9A544FE1CC82DC1E5 /* ServerStatusWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerStatusWidget.swift; sourceTree = "<group>"; };
+		4F1A00110000000000000001 /* ServerStatusWidgetSimpleStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerStatusWidgetSimpleStyle.swift; sourceTree = "<group>"; };
+		4F1A00210000000000000001 /* ServerStatusWidgetHorizontalMetricsStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerStatusWidgetHorizontalMetricsStyle.swift; sourceTree = "<group>"; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		50C0E8586D0DF805F22613C8 /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		63492E89C6129C6799A17A6D /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -199,6 +203,8 @@
 			isa = PBXGroup;
 			children = (
 				3D68CCB9A544FE1CC82DC1E5 /* ServerStatusWidget.swift */,
+				4F1A00110000000000000001 /* ServerStatusWidgetSimpleStyle.swift */,
+				4F1A00210000000000000001 /* ServerStatusWidgetHorizontalMetricsStyle.swift */,
 				A4E7AC901A5D4F3E80D9B75C /* Assets.xcassets */,
 				A4E7AC945D2F4E199F079B2C /* Localizable.strings */,
 				0BE82F6D07A1D346A9361270 /* Info.plist */,
@@ -488,6 +494,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				B972D53AEF707CB630677405 /* ServerStatusWidget.swift in Sources */,
+				4F1A00100000000000000001 /* ServerStatusWidgetSimpleStyle.swift in Sources */,
+				4F1A00200000000000000001 /* ServerStatusWidgetHorizontalMetricsStyle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

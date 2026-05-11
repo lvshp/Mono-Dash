@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../domain/entities/dashboard.dart';
 import '../../domain/entities/server.dart';
+import '../network/app_user_agent.dart';
 import '../../presentation/features/servers/widgets/server_card_shared.dart';
 
 class IosServerWidgetBridge {
@@ -23,6 +24,7 @@ class IosServerWidgetBridge {
     String appLocaleCode = 'zh',
   }) async {
     if (!_isAvailable) return;
+    final userAgent = await AppUserAgent.widgetValue;
     await _invoke('syncServers', {
       'servers': [
         for (final server in servers)
@@ -35,6 +37,7 @@ class IosServerWidgetBridge {
       'settings': {
         'requestTimeoutSeconds': requestTimeoutSeconds,
         'customHeaders': customHeaders,
+        'userAgent': userAgent,
         'appLocaleCode': appLocaleCode,
       },
     });

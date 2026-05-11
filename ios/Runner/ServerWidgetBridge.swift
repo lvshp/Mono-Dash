@@ -11,7 +11,9 @@ final class ServerWidgetBridge {
   private static let serversKey = "server_widget_servers"
   private static let snapshotsKey = "server_widget_snapshots"
   private static let settingsKey = "server_widget_settings"
-  private static let widgetKind = "ServerStatusWidget"
+  private static let simpleWidgetKind = "ServerStatusWidget"
+  private static let horizontalMetricsWidgetKind = "ServerStatusWidgetHorizontalMetrics"
+  private static let widgetKinds = [simpleWidgetKind, horizontalMetricsWidgetKind]
 
   static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(
@@ -64,7 +66,7 @@ final class ServerWidgetBridge {
     var snapshots = jsonDictionary(forKey: snapshotsKey)
     snapshots = snapshots.filter { validIds.contains($0.key) }
     setJsonValue(snapshots, forKey: snapshotsKey)
-    WidgetCenter.shared.reloadTimelines(ofKind: widgetKind)
+    reloadWidgetTimelines()
   }
 
   private static func upsertSnapshot(from arguments: Any?) {
@@ -79,7 +81,7 @@ final class ServerWidgetBridge {
     var snapshots = jsonDictionary(forKey: snapshotsKey)
     snapshots[id] = sanitize(snapshot)
     setJsonValue(snapshots, forKey: snapshotsKey)
-    WidgetCenter.shared.reloadTimelines(ofKind: widgetKind)
+    reloadWidgetTimelines()
   }
 
   private static func syncSettings(from arguments: Any?) {
@@ -93,7 +95,7 @@ final class ServerWidgetBridge {
       merged[key] = value
     }
     setJsonValue(merged, forKey: settingsKey)
-    WidgetCenter.shared.reloadTimelines(ofKind: widgetKind)
+    reloadWidgetTimelines()
   }
 
   private static func removeServer(from arguments: Any?) {
@@ -111,11 +113,17 @@ final class ServerWidgetBridge {
     var snapshots = jsonDictionary(forKey: snapshotsKey)
     snapshots.removeValue(forKey: idString)
     setJsonValue(snapshots, forKey: snapshotsKey)
-    WidgetCenter.shared.reloadTimelines(ofKind: widgetKind)
+    reloadWidgetTimelines()
   }
 
   private static var defaults: UserDefaults? {
     UserDefaults(suiteName: appGroupId)
+  }
+
+  private static func reloadWidgetTimelines() {
+    for kind in widgetKinds {
+      WidgetCenter.shared.reloadTimelines(ofKind: kind)
+    }
   }
 
   private static func setJsonValue(_ value: Any, forKey key: String) {
