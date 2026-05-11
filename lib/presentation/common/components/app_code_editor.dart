@@ -214,12 +214,14 @@ class _CodeEditorSheetState extends State<_CodeEditorSheet> {
   late final CodeLineEditingController _controller;
   bool _saving = false;
   bool _loading = false;
+  late String _loadedContent;
   String? _loadedSubtitle;
 
   @override
   void initState() {
     super.initState();
     _controller = CodeLineEditingController.fromText(widget.initialContent);
+    _loadedContent = _controller.text;
     _loadedSubtitle = widget.subtitle;
     if (widget.onLoad != null) {
       _loadContent();
@@ -232,7 +234,11 @@ class _CodeEditorSheetState extends State<_CodeEditorSheet> {
       final content = await widget.onLoad!();
       if (mounted) {
         _controller.text = content;
-        setState(() => _loading = false);
+        final loadedContent = _controller.text;
+        setState(() {
+          _loadedContent = loadedContent;
+          _loading = false;
+        });
       }
     } catch (e) {
       if (mounted) {
@@ -248,7 +254,7 @@ class _CodeEditorSheetState extends State<_CodeEditorSheet> {
     super.dispose();
   }
 
-  bool get _dirty => _controller.text != widget.initialContent;
+  bool get _dirty => _controller.text != _loadedContent;
 
   Future<void> _handleCancel() async {
     if (!_dirty) {

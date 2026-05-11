@@ -137,10 +137,11 @@ class _FileEditorPageState extends ConsumerState<FileEditorPage> {
       final content = file.content;
       _controller.removeListener(_onChanged);
       _controller.text = content;
+      final loadedContent = _controller.text;
       _controller.addListener(_onChanged);
 
       setState(() {
-        _loadedContent = content;
+        _loadedContent = loadedContent;
         _isDirty = false;
         _fileState = AsyncData(file);
       });
