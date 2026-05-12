@@ -4865,6 +4865,228 @@
   "@settings_general_title": {
     "description": "Settings section title for general options."
   },
+  "settings_security_title": "Security",
+  "@settings_security_title": {
+    "description": "Settings section title for security options."
+  },
+  "settings_appLock_title": "Launch Protection",
+  "@settings_appLock_title": {
+    "description": "Settings row and page title for app lock."
+  },
+  "settings_appLock_subtitleOn": "Password or biometrics required",
+  "@settings_appLock_subtitleOn": {
+    "description": "Settings row subtitle when app lock is enabled."
+  },
+  "settings_appLock_subtitleOff": "Require PIN or biometrics when opening the app",
+  "@settings_appLock_subtitleOff": {
+    "description": "Settings row subtitle when app lock is disabled."
+  },
+  "settings_appLock_pageTitle": "Launch Protection",
+  "@settings_appLock_pageTitle": {
+    "description": "Navigation title for the app lock settings page."
+  },
+  "settings_appLock_description": "Require a password or biometric verification before opening Mono Dash.",
+  "@settings_appLock_description": {
+    "description": "Description for enabling app lock."
+  },
+  "settings_appLock_passwordLabel": "PIN",
+  "@settings_appLock_passwordLabel": {
+    "description": "Password field label for app lock."
+  },
+  "settings_appLock_passwordSwitchTitle": "PIN",
+  "@settings_appLock_passwordSwitchTitle": {
+    "description": "Settings row title for enabling the app lock PIN."
+  },
+  "settings_appLock_confirmPasswordLabel": "Confirm PIN",
+  "@settings_appLock_confirmPasswordLabel": {
+    "description": "Confirm password field label for app lock."
+  },
+  "settings_appLock_currentPasswordLabel": "Current PIN",
+  "@settings_appLock_currentPasswordLabel": {
+    "description": "Current password field label for app lock."
+  },
+  "settings_appLock_newPasswordLabel": "New PIN",
+  "@settings_appLock_newPasswordLabel": {
+    "description": "New password field label for app lock."
+  },
+  "settings_appLock_passwordRequired": "Enter your PIN",
+  "@settings_appLock_passwordRequired": {
+    "description": "Validation error for empty app lock password."
+  },
+  "settings_appLock_passwordTooShort": "Use a 6-digit PIN",
+  "@settings_appLock_passwordTooShort": {
+    "description": "Validation error for short app lock password."
+  },
+  "settings_appLock_passwordDigitsOnly": "Use digits only",
+  "@settings_appLock_passwordDigitsOnly": {
+    "description": "Validation error when app lock PIN contains non-digits."
+  },
+  "settings_appLock_createPinTitle": "Create a PIN",
+  "@settings_appLock_createPinTitle": {
+    "description": "Title for creating an app lock PIN."
+  },
+  "settings_appLock_createPinSubtitle": "Enter 6 digits. This PIN is used when biometrics are unavailable.",
+  "@settings_appLock_createPinSubtitle": {
+    "description": "Subtitle for creating an app lock PIN."
+  },
+  "settings_appLock_confirmPinTitle": "Confirm your PIN",
+  "@settings_appLock_confirmPinTitle": {
+    "description": "Title for confirming an app lock PIN."
+  },
+  "settings_appLock_confirmPinSubtitle": "Enter the PIN again to enable launch protection.",
+  "@settings_appLock_confirmPinSubtitle": {
+    "description": "Subtitle for confirming an app lock PIN."
+  },
+  "settings_appLock_currentPinTitle": "Enter current PIN",
+  "@settings_appLock_currentPinTitle": {
+    "description": "Title for entering the current app lock PIN."
+  },
+  "settings_appLock_currentPinSubtitle": "Verify the existing PIN before changing it.",
+  "@settings_appLock_currentPinSubtitle": {
+    "description": "Subtitle for entering the current app lock PIN."
+  },
+  "settings_appLock_newPinTitle": "Enter new PIN",
+  "@settings_appLock_newPinTitle": {
+    "description": "Title for entering a new app lock PIN."
+  },
+  "settings_appLock_newPinSubtitle": "Choose 6 digits.",
+  "@settings_appLock_newPinSubtitle": {
+    "description": "Subtitle for entering a new app lock PIN."
+  },
+  "settings_appLock_passwordMismatch": "Passwords do not match",
+  "@settings_appLock_passwordMismatch": {
+    "description": "Validation error when app lock passwords differ."
+  },
+  "settings_appLock_wrongPassword": "Incorrect password",
+  "@settings_appLock_wrongPassword": {
+    "description": "Validation error for an incorrect app lock password."
+  },
+  "settings_appLock_enableAction": "Enable Launch Protection",
+  "@settings_appLock_enableAction": {
+    "description": "Button label to enable app lock."
+  },
+  "settings_appLock_disableTitle": "Turn off launch protection?",
+  "@settings_appLock_disableTitle": {
+    "description": "Dialog title for disabling app lock."
+  },
+  "settings_appLock_disableContent": "Mono Dash will open without password or biometric verification.",
+  "@settings_appLock_disableContent": {
+    "description": "Dialog content for disabling app lock."
+  },
+  "settings_appLock_disableAction": "Turn Off",
+  "@settings_appLock_disableAction": {
+    "description": "Destructive action label for disabling app lock."
+  },
+  "settings_appLock_disableVerifyTitle": "Enter PIN",
+  "@settings_appLock_disableVerifyTitle": {
+    "description": "Title for verifying PIN before disabling app lock."
+  },
+  "settings_appLock_disableVerifySubtitle": "Verify your PIN to turn off launch protection.",
+  "@settings_appLock_disableVerifySubtitle": {
+    "description": "Subtitle for verifying PIN before disabling app lock."
+  },
+  "settings_appLock_enabledToast": "Launch protection enabled",
+  "@settings_appLock_enabledToast": {
+    "description": "Toast shown after enabling app lock."
+  },
+  "settings_appLock_disabledToast": "Launch protection disabled",
+  "@settings_appLock_disabledToast": {
+    "description": "Toast shown after disabling app lock."
+  },
+  "settings_appLock_passwordUpdatedToast": "Password updated",
+  "@settings_appLock_passwordUpdatedToast": {
+    "description": "Toast shown after changing app lock password."
+  },
+  "settings_appLock_biometricTitle": "Biometric Unlock",
+  "@settings_appLock_biometricTitle": {
+    "description": "Settings row title for biometric app unlock."
+  },
+  "settings_appLock_biometricSectionTitle": "Biometrics",
+  "@settings_appLock_biometricSectionTitle": {
+    "description": "Settings section title for biometric unlock options."
+  },
+  "settings_appLock_biometricSubtitle": "Use Face ID, Touch ID, or fingerprint",
+  "@settings_appLock_biometricSubtitle": {
+    "description": "Settings row subtitle for biometric app unlock."
+  },
+  "settings_appLock_biometricUnavailable": "No enrolled biometrics on this device",
+  "@settings_appLock_biometricUnavailable": {
+    "description": "Settings row subtitle when biometrics are unavailable."
+  },
+  "settings_appLock_biometricRequiresPassword": "Turn on PIN first",
+  "@settings_appLock_biometricRequiresPassword": {
+    "description": "Subtitle shown when biometric unlock requires PIN to be enabled first."
+  },
+  "settings_appLock_faceIdTitle": "Face ID",
+  "@settings_appLock_faceIdTitle": {
+    "description": "Biometric row title for Face ID."
+  },
+  "settings_appLock_fingerprintTitle": "Fingerprint",
+  "@settings_appLock_fingerprintTitle": {
+    "description": "Biometric row title for fingerprint unlock."
+  },
+  "settings_appLock_changePassword": "Change Password",
+  "@settings_appLock_changePassword": {
+    "description": "Settings row title for changing app lock password."
+  },
+  "settings_appLock_changePasswordSubtitle": "Update the password used to unlock the app",
+  "@settings_appLock_changePasswordSubtitle": {
+    "description": "Settings row subtitle for changing app lock password."
+  },
+  "settings_appLock_authReason": "Unlock Mono Dash",
+  "@settings_appLock_authReason": {
+    "description": "Reason shown in the system biometric prompt."
+  },
+  "settings_appLock_unlockTitle": "Mono Dash is locked",
+  "@settings_appLock_unlockTitle": {
+    "description": "Title on the app lock screen."
+  },
+  "settings_appLock_unlockSubtitle": "Enter your PIN or use biometrics to continue.",
+  "@settings_appLock_unlockSubtitle": {
+    "description": "Subtitle on the app lock screen."
+  },
+  "settings_appLock_unlockAction": "Unlock",
+  "@settings_appLock_unlockAction": {
+    "description": "Button label to unlock the app."
+  },
+  "settings_appLock_useBiometric": "Use Biometrics",
+  "@settings_appLock_useBiometric": {
+    "description": "Button label to trigger biometric unlock."
+  },
+  "settings_appLock_unlockFailed": "Unable to verify biometrics",
+  "@settings_appLock_unlockFailed": {
+    "description": "Toast shown when biometric unlock fails."
+  },
+  "settings_appLock_widgetNote": "Home screen widgets refresh independently. Launch protection only protects the main app and does not block widget timeline refreshes.",
+  "@settings_appLock_widgetNote": {
+    "description": "Footnote explaining app lock interaction with widgets."
+  },
+  "settings_appLock_setPinSheetTitle": "Set PIN",
+  "@settings_appLock_setPinSheetTitle": {
+    "description": "Bottom sheet title for setting an app lock PIN."
+  },
+  "settings_appLock_changePinSheetTitle": "Change PIN",
+  "@settings_appLock_changePinSheetTitle": {
+    "description": "Bottom sheet title for changing an app lock PIN."
+  },
+  "settings_appLock_enableBiometricSheetTitle": "Use {method}?",
+  "@settings_appLock_enableBiometricSheetTitle": {
+    "description": "Title for choosing whether to enable biometric unlock after setting PIN.",
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "settings_appLock_enableBiometricSheetSubtitle": "You can unlock Mono Dash with {method} after entering your PIN once.",
+  "@settings_appLock_enableBiometricSheetSubtitle": {
+    "description": "Subtitle for choosing whether to enable biometric unlock after setting PIN.",
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
   "settings_cache_title": "Cache Management",
   "@settings_cache_title": {
     "description": "Settings row and page title for cache management."

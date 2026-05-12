@@ -22,7 +22,9 @@ import '../../../common/components/app_picker.dart';
 import '../../../common/components/sub_menu_page.dart';
 import '../../panel_settings/widgets/edit_setting_value_sheet.dart';
 import '../../purchases/providers/purchase_provider.dart';
+import '../../settings/providers/app_lock_provider.dart';
 import '../../settings/providers/app_settings_provider.dart';
+import '../../settings/screens/app_lock_settings_page.dart';
 import '../../settings/screens/app_icon_settings_page.dart';
 import '../../settings/screens/card_style_settings_page.dart';
 import '../../settings/screens/language_settings_page.dart';
@@ -51,6 +53,8 @@ class ServersSettingsTab extends ConsumerWidget {
         settings?.serverCardStyle ?? ServerCardStyle.simple;
     final selectedAppearanceMode =
         settings?.appearanceMode ?? AppAppearanceMode.system;
+    final appLockAsync = ref.watch(appLockControllerProvider);
+    final appLockEnabled = appLockAsync.valueOrNull?.enabled ?? false;
     final requestTimeoutSeconds =
         settings?.requestTimeoutSeconds ??
         AppSettingsController.defaultRequestTimeoutSeconds;
@@ -93,6 +97,27 @@ class ServersSettingsTab extends ConsumerWidget {
                     onTap: () => Navigator.of(context).push(
                       CupertinoPageRoute<void>(
                         builder: (_) => const PremiumPurchasePage(),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Security Section
+              SubMenuCard(
+                title: l10n.settings_security_title,
+                children: [
+                  _SettingsRow(
+                    icon: TablerIcons.lock,
+                    iconColor: CupertinoColors.activeBlue,
+                    title: l10n.settings_appLock_title,
+                    subtitle: appLockEnabled
+                        ? l10n.settings_appLock_subtitleOn
+                        : l10n.settings_appLock_subtitleOff,
+                    onTap: () => Navigator.of(context).push(
+                      CupertinoPageRoute<void>(
+                        builder: (_) => const AppLockSettingsPage(),
                       ),
                     ),
                   ),

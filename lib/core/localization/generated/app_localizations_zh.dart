@@ -3446,6 +3446,171 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_general_title => '通用';
 
   @override
+  String get settings_security_title => '安全';
+
+  @override
+  String get settings_appLock_title => '启动保护';
+
+  @override
+  String get settings_appLock_subtitleOn => '需要密码或生物识别';
+
+  @override
+  String get settings_appLock_subtitleOff => '打开 App 时需要数字密码或生物识别验证';
+
+  @override
+  String get settings_appLock_pageTitle => '启动保护';
+
+  @override
+  String get settings_appLock_description => '打开 Mono Dash 前需要输入密码或完成生物识别验证。';
+
+  @override
+  String get settings_appLock_passwordLabel => '数字密码';
+
+  @override
+  String get settings_appLock_passwordSwitchTitle => '密码';
+
+  @override
+  String get settings_appLock_confirmPasswordLabel => '确认数字密码';
+
+  @override
+  String get settings_appLock_currentPasswordLabel => '当前数字密码';
+
+  @override
+  String get settings_appLock_newPasswordLabel => '新数字密码';
+
+  @override
+  String get settings_appLock_passwordRequired => '请输入数字密码';
+
+  @override
+  String get settings_appLock_passwordTooShort => '请使用 6 位数字密码';
+
+  @override
+  String get settings_appLock_passwordDigitsOnly => '只能使用数字';
+
+  @override
+  String get settings_appLock_createPinTitle => '创建数字密码';
+
+  @override
+  String get settings_appLock_createPinSubtitle => '请输入 6 位数字。生物识别不可用时可用它解锁。';
+
+  @override
+  String get settings_appLock_confirmPinTitle => '确认数字密码';
+
+  @override
+  String get settings_appLock_confirmPinSubtitle => '再次输入数字密码以开启启动保护。';
+
+  @override
+  String get settings_appLock_currentPinTitle => '输入当前数字密码';
+
+  @override
+  String get settings_appLock_currentPinSubtitle => '修改前需要先验证当前数字密码。';
+
+  @override
+  String get settings_appLock_newPinTitle => '输入新数字密码';
+
+  @override
+  String get settings_appLock_newPinSubtitle => '请选择 6 位数字。';
+
+  @override
+  String get settings_appLock_passwordMismatch => '两次输入的密码不一致';
+
+  @override
+  String get settings_appLock_wrongPassword => '密码不正确';
+
+  @override
+  String get settings_appLock_enableAction => '开启启动保护';
+
+  @override
+  String get settings_appLock_disableTitle => '关闭启动保护？';
+
+  @override
+  String get settings_appLock_disableContent =>
+      '关闭后，打开 Mono Dash 时不再需要密码或生物识别验证。';
+
+  @override
+  String get settings_appLock_disableAction => '关闭';
+
+  @override
+  String get settings_appLock_disableVerifyTitle => '输入数字密码';
+
+  @override
+  String get settings_appLock_disableVerifySubtitle => '验证数字密码后才能关闭启动保护。';
+
+  @override
+  String get settings_appLock_enabledToast => '启动保护已开启';
+
+  @override
+  String get settings_appLock_disabledToast => '启动保护已关闭';
+
+  @override
+  String get settings_appLock_passwordUpdatedToast => '密码已更新';
+
+  @override
+  String get settings_appLock_biometricTitle => '生物识别解锁';
+
+  @override
+  String get settings_appLock_biometricSectionTitle => '生物识别';
+
+  @override
+  String get settings_appLock_biometricSubtitle => '使用 Face ID、Touch ID 或指纹';
+
+  @override
+  String get settings_appLock_biometricUnavailable => '当前设备没有可用的生物识别';
+
+  @override
+  String get settings_appLock_biometricRequiresPassword => '请先开启密码';
+
+  @override
+  String get settings_appLock_faceIdTitle => 'Face ID';
+
+  @override
+  String get settings_appLock_fingerprintTitle => '指纹解锁';
+
+  @override
+  String get settings_appLock_changePassword => '修改密码';
+
+  @override
+  String get settings_appLock_changePasswordSubtitle => '更新用于解锁 App 的密码';
+
+  @override
+  String get settings_appLock_authReason => '解锁 Mono Dash';
+
+  @override
+  String get settings_appLock_unlockTitle => 'Mono Dash 已锁定';
+
+  @override
+  String get settings_appLock_unlockSubtitle => '输入数字密码或使用生物识别继续。';
+
+  @override
+  String get settings_appLock_unlockAction => '解锁';
+
+  @override
+  String get settings_appLock_useBiometric => '使用生物识别';
+
+  @override
+  String get settings_appLock_unlockFailed => '无法完成生物识别验证';
+
+  @override
+  String get settings_appLock_widgetNote =>
+      '桌面小组件会独立刷新。启动保护只保护主应用入口，不会阻止小组件时间线刷新。';
+
+  @override
+  String get settings_appLock_setPinSheetTitle => '设置密码';
+
+  @override
+  String get settings_appLock_changePinSheetTitle => '修改密码';
+
+  @override
+  String settings_appLock_enableBiometricSheetTitle(String method) {
+    return '使用 $method？';
+  }
+
+  @override
+  String settings_appLock_enableBiometricSheetSubtitle(String method) {
+    return '输入一次数字密码后，可以使用 $method 解锁 Mono Dash。';
+  }
+
+  @override
   String get settings_cache_title => '缓存管理';
 
   @override

@@ -40,6 +40,8 @@
 		<string>_bonjour._tcp</string>
 		<string>_lnp._tcp.</string>
 	</array>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Use Face ID to unlock Mono Dash.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Select photos or files from your library to upload to a 1Panel panel.</string>
 	<key>NSSupportsLiveActivities</key>

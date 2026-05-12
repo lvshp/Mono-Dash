@@ -3539,6 +3539,181 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_general_title => 'General';
 
   @override
+  String get settings_security_title => 'Security';
+
+  @override
+  String get settings_appLock_title => 'Launch Protection';
+
+  @override
+  String get settings_appLock_subtitleOn => 'Password or biometrics required';
+
+  @override
+  String get settings_appLock_subtitleOff =>
+      'Require PIN or biometrics when opening the app';
+
+  @override
+  String get settings_appLock_pageTitle => 'Launch Protection';
+
+  @override
+  String get settings_appLock_description =>
+      'Require a password or biometric verification before opening Mono Dash.';
+
+  @override
+  String get settings_appLock_passwordLabel => 'PIN';
+
+  @override
+  String get settings_appLock_passwordSwitchTitle => 'PIN';
+
+  @override
+  String get settings_appLock_confirmPasswordLabel => 'Confirm PIN';
+
+  @override
+  String get settings_appLock_currentPasswordLabel => 'Current PIN';
+
+  @override
+  String get settings_appLock_newPasswordLabel => 'New PIN';
+
+  @override
+  String get settings_appLock_passwordRequired => 'Enter your PIN';
+
+  @override
+  String get settings_appLock_passwordTooShort => 'Use a 6-digit PIN';
+
+  @override
+  String get settings_appLock_passwordDigitsOnly => 'Use digits only';
+
+  @override
+  String get settings_appLock_createPinTitle => 'Create a PIN';
+
+  @override
+  String get settings_appLock_createPinSubtitle =>
+      'Enter 6 digits. This PIN is used when biometrics are unavailable.';
+
+  @override
+  String get settings_appLock_confirmPinTitle => 'Confirm your PIN';
+
+  @override
+  String get settings_appLock_confirmPinSubtitle =>
+      'Enter the PIN again to enable launch protection.';
+
+  @override
+  String get settings_appLock_currentPinTitle => 'Enter current PIN';
+
+  @override
+  String get settings_appLock_currentPinSubtitle =>
+      'Verify the existing PIN before changing it.';
+
+  @override
+  String get settings_appLock_newPinTitle => 'Enter new PIN';
+
+  @override
+  String get settings_appLock_newPinSubtitle => 'Choose 6 digits.';
+
+  @override
+  String get settings_appLock_passwordMismatch => 'Passwords do not match';
+
+  @override
+  String get settings_appLock_wrongPassword => 'Incorrect password';
+
+  @override
+  String get settings_appLock_enableAction => 'Enable Launch Protection';
+
+  @override
+  String get settings_appLock_disableTitle => 'Turn off launch protection?';
+
+  @override
+  String get settings_appLock_disableContent =>
+      'Mono Dash will open without password or biometric verification.';
+
+  @override
+  String get settings_appLock_disableAction => 'Turn Off';
+
+  @override
+  String get settings_appLock_disableVerifyTitle => 'Enter PIN';
+
+  @override
+  String get settings_appLock_disableVerifySubtitle =>
+      'Verify your PIN to turn off launch protection.';
+
+  @override
+  String get settings_appLock_enabledToast => 'Launch protection enabled';
+
+  @override
+  String get settings_appLock_disabledToast => 'Launch protection disabled';
+
+  @override
+  String get settings_appLock_passwordUpdatedToast => 'Password updated';
+
+  @override
+  String get settings_appLock_biometricTitle => 'Biometric Unlock';
+
+  @override
+  String get settings_appLock_biometricSectionTitle => 'Biometrics';
+
+  @override
+  String get settings_appLock_biometricSubtitle =>
+      'Use Face ID, Touch ID, or fingerprint';
+
+  @override
+  String get settings_appLock_biometricUnavailable =>
+      'No enrolled biometrics on this device';
+
+  @override
+  String get settings_appLock_biometricRequiresPassword => 'Turn on PIN first';
+
+  @override
+  String get settings_appLock_faceIdTitle => 'Face ID';
+
+  @override
+  String get settings_appLock_fingerprintTitle => 'Fingerprint';
+
+  @override
+  String get settings_appLock_changePassword => 'Change Password';
+
+  @override
+  String get settings_appLock_changePasswordSubtitle =>
+      'Update the password used to unlock the app';
+
+  @override
+  String get settings_appLock_authReason => 'Unlock Mono Dash';
+
+  @override
+  String get settings_appLock_unlockTitle => 'Mono Dash is locked';
+
+  @override
+  String get settings_appLock_unlockSubtitle =>
+      'Enter your PIN or use biometrics to continue.';
+
+  @override
+  String get settings_appLock_unlockAction => 'Unlock';
+
+  @override
+  String get settings_appLock_useBiometric => 'Use Biometrics';
+
+  @override
+  String get settings_appLock_unlockFailed => 'Unable to verify biometrics';
+
+  @override
+  String get settings_appLock_widgetNote =>
+      'Home screen widgets refresh independently. Launch protection only protects the main app and does not block widget timeline refreshes.';
+
+  @override
+  String get settings_appLock_setPinSheetTitle => 'Set PIN';
+
+  @override
+  String get settings_appLock_changePinSheetTitle => 'Change PIN';
+
+  @override
+  String settings_appLock_enableBiometricSheetTitle(String method) {
+    return 'Use $method?';
+  }
+
+  @override
+  String settings_appLock_enableBiometricSheetSubtitle(String method) {
+    return 'You can unlock Mono Dash with $method after entering your PIN once.';
+  }
+
+  @override
   String get settings_cache_title => 'Cache Management';
 
   @override

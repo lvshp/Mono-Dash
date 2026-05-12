@@ -6530,6 +6530,324 @@ abstract class AppLocalizations {
   /// **'General'**
   String get settings_general_title;
 
+  /// Settings section title for security options.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get settings_security_title;
+
+  /// Settings row and page title for app lock.
+  ///
+  /// In en, this message translates to:
+  /// **'Launch Protection'**
+  String get settings_appLock_title;
+
+  /// Settings row subtitle when app lock is enabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Password or biometrics required'**
+  String get settings_appLock_subtitleOn;
+
+  /// Settings row subtitle when app lock is disabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Require PIN or biometrics when opening the app'**
+  String get settings_appLock_subtitleOff;
+
+  /// Navigation title for the app lock settings page.
+  ///
+  /// In en, this message translates to:
+  /// **'Launch Protection'**
+  String get settings_appLock_pageTitle;
+
+  /// Description for enabling app lock.
+  ///
+  /// In en, this message translates to:
+  /// **'Require a password or biometric verification before opening Mono Dash.'**
+  String get settings_appLock_description;
+
+  /// Password field label for app lock.
+  ///
+  /// In en, this message translates to:
+  /// **'PIN'**
+  String get settings_appLock_passwordLabel;
+
+  /// Settings row title for enabling the app lock PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'PIN'**
+  String get settings_appLock_passwordSwitchTitle;
+
+  /// Confirm password field label for app lock.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm PIN'**
+  String get settings_appLock_confirmPasswordLabel;
+
+  /// Current password field label for app lock.
+  ///
+  /// In en, this message translates to:
+  /// **'Current PIN'**
+  String get settings_appLock_currentPasswordLabel;
+
+  /// New password field label for app lock.
+  ///
+  /// In en, this message translates to:
+  /// **'New PIN'**
+  String get settings_appLock_newPasswordLabel;
+
+  /// Validation error for empty app lock password.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your PIN'**
+  String get settings_appLock_passwordRequired;
+
+  /// Validation error for short app lock password.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a 6-digit PIN'**
+  String get settings_appLock_passwordTooShort;
+
+  /// Validation error when app lock PIN contains non-digits.
+  ///
+  /// In en, this message translates to:
+  /// **'Use digits only'**
+  String get settings_appLock_passwordDigitsOnly;
+
+  /// Title for creating an app lock PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a PIN'**
+  String get settings_appLock_createPinTitle;
+
+  /// Subtitle for creating an app lock PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter 6 digits. This PIN is used when biometrics are unavailable.'**
+  String get settings_appLock_createPinSubtitle;
+
+  /// Title for confirming an app lock PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your PIN'**
+  String get settings_appLock_confirmPinTitle;
+
+  /// Subtitle for confirming an app lock PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the PIN again to enable launch protection.'**
+  String get settings_appLock_confirmPinSubtitle;
+
+  /// Title for entering the current app lock PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter current PIN'**
+  String get settings_appLock_currentPinTitle;
+
+  /// Subtitle for entering the current app lock PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify the existing PIN before changing it.'**
+  String get settings_appLock_currentPinSubtitle;
+
+  /// Title for entering a new app lock PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter new PIN'**
+  String get settings_appLock_newPinTitle;
+
+  /// Subtitle for entering a new app lock PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose 6 digits.'**
+  String get settings_appLock_newPinSubtitle;
+
+  /// Validation error when app lock passwords differ.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get settings_appLock_passwordMismatch;
+
+  /// Validation error for an incorrect app lock password.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect password'**
+  String get settings_appLock_wrongPassword;
+
+  /// Button label to enable app lock.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Launch Protection'**
+  String get settings_appLock_enableAction;
+
+  /// Dialog title for disabling app lock.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off launch protection?'**
+  String get settings_appLock_disableTitle;
+
+  /// Dialog content for disabling app lock.
+  ///
+  /// In en, this message translates to:
+  /// **'Mono Dash will open without password or biometric verification.'**
+  String get settings_appLock_disableContent;
+
+  /// Destructive action label for disabling app lock.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn Off'**
+  String get settings_appLock_disableAction;
+
+  /// Title for verifying PIN before disabling app lock.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter PIN'**
+  String get settings_appLock_disableVerifyTitle;
+
+  /// Subtitle for verifying PIN before disabling app lock.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify your PIN to turn off launch protection.'**
+  String get settings_appLock_disableVerifySubtitle;
+
+  /// Toast shown after enabling app lock.
+  ///
+  /// In en, this message translates to:
+  /// **'Launch protection enabled'**
+  String get settings_appLock_enabledToast;
+
+  /// Toast shown after disabling app lock.
+  ///
+  /// In en, this message translates to:
+  /// **'Launch protection disabled'**
+  String get settings_appLock_disabledToast;
+
+  /// Toast shown after changing app lock password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password updated'**
+  String get settings_appLock_passwordUpdatedToast;
+
+  /// Settings row title for biometric app unlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric Unlock'**
+  String get settings_appLock_biometricTitle;
+
+  /// Settings section title for biometric unlock options.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometrics'**
+  String get settings_appLock_biometricSectionTitle;
+
+  /// Settings row subtitle for biometric app unlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Face ID, Touch ID, or fingerprint'**
+  String get settings_appLock_biometricSubtitle;
+
+  /// Settings row subtitle when biometrics are unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No enrolled biometrics on this device'**
+  String get settings_appLock_biometricUnavailable;
+
+  /// Subtitle shown when biometric unlock requires PIN to be enabled first.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on PIN first'**
+  String get settings_appLock_biometricRequiresPassword;
+
+  /// Biometric row title for Face ID.
+  ///
+  /// In en, this message translates to:
+  /// **'Face ID'**
+  String get settings_appLock_faceIdTitle;
+
+  /// Biometric row title for fingerprint unlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Fingerprint'**
+  String get settings_appLock_fingerprintTitle;
+
+  /// Settings row title for changing app lock password.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get settings_appLock_changePassword;
+
+  /// Settings row subtitle for changing app lock password.
+  ///
+  /// In en, this message translates to:
+  /// **'Update the password used to unlock the app'**
+  String get settings_appLock_changePasswordSubtitle;
+
+  /// Reason shown in the system biometric prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock Mono Dash'**
+  String get settings_appLock_authReason;
+
+  /// Title on the app lock screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Mono Dash is locked'**
+  String get settings_appLock_unlockTitle;
+
+  /// Subtitle on the app lock screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your PIN or use biometrics to continue.'**
+  String get settings_appLock_unlockSubtitle;
+
+  /// Button label to unlock the app.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock'**
+  String get settings_appLock_unlockAction;
+
+  /// Button label to trigger biometric unlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Biometrics'**
+  String get settings_appLock_useBiometric;
+
+  /// Toast shown when biometric unlock fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to verify biometrics'**
+  String get settings_appLock_unlockFailed;
+
+  /// Footnote explaining app lock interaction with widgets.
+  ///
+  /// In en, this message translates to:
+  /// **'Home screen widgets refresh independently. Launch protection only protects the main app and does not block widget timeline refreshes.'**
+  String get settings_appLock_widgetNote;
+
+  /// Bottom sheet title for setting an app lock PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Set PIN'**
+  String get settings_appLock_setPinSheetTitle;
+
+  /// Bottom sheet title for changing an app lock PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Change PIN'**
+  String get settings_appLock_changePinSheetTitle;
+
+  /// Title for choosing whether to enable biometric unlock after setting PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Use {method}?'**
+  String settings_appLock_enableBiometricSheetTitle(String method);
+
+  /// Subtitle for choosing whether to enable biometric unlock after setting PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'You can unlock Mono Dash with {method} after entering your PIN once.'**
+  String settings_appLock_enableBiometricSheetSubtitle(String method);
+
   /// Settings row and page title for cache management.
   ///
   /// In en, this message translates to:

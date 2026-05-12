@@ -14,6 +14,7 @@ import 'core/storage/storage_service.dart';
 import 'core/theme/app_theme.dart';
 import 'core/widgets/ios_server_widget_bridge.dart';
 import 'presentation/features/settings/providers/app_settings_provider.dart';
+import 'presentation/features/settings/widgets/app_lock_gate.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,6 +62,8 @@ class MyApp extends ConsumerWidget {
           AppAppearanceMode.dark => AppTheme.darkTheme,
         },
         routerConfig: appRouter,
+        builder: (context, child) =>
+            AppLockGate(child: child ?? const SizedBox.shrink()),
         locale: localeOption.toLocale(),
         supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: const [
