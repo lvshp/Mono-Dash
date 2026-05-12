@@ -30,6 +30,7 @@ class ServerCard extends ConsumerWidget {
     final status = ServerCardStatus.fromSnapshot(
       isLoading: snapshot.isLoading,
       hasData: dashboard != null,
+      hasError: snapshot.hasError,
       latencyMs: snapshotData?.fetchMs,
     );
 

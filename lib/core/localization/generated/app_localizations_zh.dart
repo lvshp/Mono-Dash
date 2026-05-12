@@ -1991,7 +1991,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get premium_moreFeaturesTitle => '更多高级功能';
 
   @override
-  String get premium_moreFeaturesDescription => '桌面小组件、多端同步等更多高级功能正在开发中，敬请期待。';
+  String get premium_desktopWidgetsFeature => '桌面小组件';
+
+  @override
+  String get premium_desktopWidgetsFreeHint => '（已免费开放）';
+
+  @override
+  String get premium_moreFeaturesDescription => '、多端同步等更多高级功能正在开发中，敬请期待。';
 
   @override
   String get premium_supportTitle => '支持开源项目';

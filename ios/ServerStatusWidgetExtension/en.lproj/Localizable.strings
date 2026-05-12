@@ -19,6 +19,7 @@
 "widget.fallback.open_app" = "Open Mono Dash once to enable widget refresh.";
 "widget.fallback.tap_refresh" = "Tap refresh to fetch this server.";
 "widget.action.refresh" = "Refresh";
+"widget.status.unknown" = "Unknown";
 "widget.empty.title" = "No Server";
 "widget.empty.subtitle" = "Add a server in Mono Dash.";
 "widget.metric.memory" = "MEM";

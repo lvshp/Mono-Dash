@@ -2816,9 +2816,17 @@
   "@premium_moreFeaturesTitle": {
     "description": "Premium benefit title for future features."
   },
-  "premium_moreFeaturesDescription": "Desktop widgets, multi-device sync, and more advanced features are in development.",
+  "premium_desktopWidgetsFeature": "Desktop widgets",
+  "@premium_desktopWidgetsFeature": {
+    "description": "Premium benefit text for desktop widgets."
+  },
+  "premium_desktopWidgetsFreeHint": " (now free)",
+  "@premium_desktopWidgetsFreeHint": {
+    "description": "Premium benefit highlighted hint that desktop widgets are free for all users."
+  },
+  "premium_moreFeaturesDescription": ", multi-device sync, and more advanced features are in development.",
   "@premium_moreFeaturesDescription": {
-    "description": "Premium benefit description for future features."
+    "description": "Premium benefit description suffix for future features."
   },
   "premium_supportTitle": "Support Open Source",
   "@premium_supportTitle": {

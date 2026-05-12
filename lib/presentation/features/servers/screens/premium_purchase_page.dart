@@ -138,7 +138,10 @@ class PremiumPurchasePage extends ConsumerWidget {
           icon: CupertinoIcons.app_badge_fill,
           iconColor: CupertinoColors.systemBlue,
           title: l10n.premium_moreFeaturesTitle,
-          description: l10n.premium_moreFeaturesDescription,
+          description: l10n.premium_desktopWidgetsFeature,
+          hint: l10n.premium_desktopWidgetsFreeHint,
+          hintColor: CupertinoColors.systemBlue.resolveFrom(context),
+          suffix: l10n.premium_moreFeaturesDescription,
         ),
         const SizedBox(height: 24),
         _BenefitItem(
@@ -399,6 +402,7 @@ class _BenefitItem extends StatelessWidget {
   final String description;
   final String? hint;
   final Color? hintColor;
+  final String? suffix;
 
   const _BenefitItem({
     required this.icon,
@@ -407,6 +411,7 @@ class _BenefitItem extends StatelessWidget {
     required this.description,
     this.hint,
     this.hintColor,
+    this.suffix,
   });
 
   @override
@@ -449,6 +454,7 @@ class _BenefitItem extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
+                    if (suffix != null) TextSpan(text: suffix),
                   ],
                 ),
                 style: TextStyle(

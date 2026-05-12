@@ -3788,10 +3788,22 @@ abstract class AppLocalizations {
   /// **'More Advanced Features'**
   String get premium_moreFeaturesTitle;
 
-  /// Premium benefit description for future features.
+  /// Premium benefit text for desktop widgets.
   ///
   /// In en, this message translates to:
-  /// **'Desktop widgets, multi-device sync, and more advanced features are in development.'**
+  /// **'Desktop widgets'**
+  String get premium_desktopWidgetsFeature;
+
+  /// Premium benefit highlighted hint that desktop widgets are free for all users.
+  ///
+  /// In en, this message translates to:
+  /// **' (now free)'**
+  String get premium_desktopWidgetsFreeHint;
+
+  /// Premium benefit description suffix for future features.
+  ///
+  /// In en, this message translates to:
+  /// **', multi-device sync, and more advanced features are in development.'**
   String get premium_moreFeaturesDescription;
 
   /// Premium benefit title for supporting the open source project.

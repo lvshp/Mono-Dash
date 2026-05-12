@@ -941,20 +941,22 @@ struct ServerStatusWidgetEntryView: View {
 
   @ViewBuilder
   func simpleHeader(_ snapshot: ServerSnapshot) -> some View {
+    let latencyMs = entry.errorMessage == nil ? snapshot.latencyMs : nil
+
     if family == .systemMedium {
-      mediumHeader(snapshot)
+      mediumHeader(snapshot, latencyMs: latencyMs)
     } else {
       header(
         title: snapshot.title,
         subtitle: simpleSubtitle(snapshot),
         osName: snapshot.osName,
-        latencyMs: snapshot.latencyMs,
+        latencyMs: latencyMs,
         serverId: snapshot.id
       )
     }
   }
 
-  private func mediumHeader(_ snapshot: ServerSnapshot) -> some View {
+  private func mediumHeader(_ snapshot: ServerSnapshot, latencyMs: Int?) -> some View {
     let ip = displayIPAddress(snapshot)
     let isIPVisible = WidgetStore.isIPVisible(serverId: snapshot.id)
 
@@ -982,23 +984,25 @@ struct ServerStatusWidgetEntryView: View {
 
       Spacer(minLength: 0)
 
-      mediumActions(snapshot)
+      mediumActions(snapshot, latencyMs: latencyMs)
     }
   }
 
-  private func mediumActions(_ snapshot: ServerSnapshot) -> some View {
+  private func mediumActions(_ snapshot: ServerSnapshot, latencyMs: Int?) -> some View {
     HStack(spacing: 6) {
+      let tint = latencyTint(latencyMs)
+
       HStack(spacing: 3) {
         Image(systemName: "timer")
           .font(.caption2.weight(.bold))
-        Text("\(snapshot.latencyMs)ms")
+        Text(latencyMs.map { "\($0)ms" } ?? strings.string("widget.status.unknown"))
           .font(.caption2.weight(.bold))
           .numericTextTransition()
       }
-      .foregroundStyle(snapshot.latencyMs > 500 ? .orange : .green)
+      .foregroundStyle(tint)
       .padding(.horizontal, 7)
       .padding(.vertical, 4)
-      .background((snapshot.latencyMs > 500 ? Color.orange : Color.green).opacity(0.1), in: RoundedRectangle(cornerRadius: 6))
+      .background(tint.opacity(latencyMs == nil ? 0.12 : 0.1), in: RoundedRectangle(cornerRadius: 6))
 
       Button(intent: RefreshServerIntent(serverId: String(snapshot.id))) {
         Image(systemName: "arrow.clockwise")
@@ -1009,6 +1013,11 @@ struct ServerStatusWidgetEntryView: View {
       }
       .buttonStyle(.plain)
     }
+  }
+
+  private func latencyTint(_ latencyMs: Int?) -> Color {
+    guard let latencyMs else { return .secondary }
+    return latencyMs > 500 ? .orange : .green
   }
 
   private func ipAddressText(ip: String, isVisible: Bool) -> some View {
@@ -1060,6 +1069,13 @@ struct ServerStatusWidgetEntryView: View {
           .padding(.horizontal, 7)
           .padding(.vertical, 4)
           .background((latencyMs > 500 ? Color.orange : Color.green).opacity(0.1), in: RoundedRectangle(cornerRadius: 6))
+      } else if !isSmall, entry.errorMessage != nil {
+        Text(strings.string("widget.status.unknown"))
+          .font(.caption2.weight(.bold))
+          .foregroundStyle(.secondary)
+          .padding(.horizontal, 7)
+          .padding(.vertical, 4)
+          .background(.secondary.opacity(0.12), in: RoundedRectangle(cornerRadius: 6))
       }
 
       if let serverId {

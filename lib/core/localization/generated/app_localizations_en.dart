@@ -2048,8 +2048,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get premium_moreFeaturesTitle => 'More Advanced Features';
 
   @override
+  String get premium_desktopWidgetsFeature => 'Desktop widgets';
+
+  @override
+  String get premium_desktopWidgetsFreeHint => ' (now free)';
+
+  @override
   String get premium_moreFeaturesDescription =>
-      'Desktop widgets, multi-device sync, and more advanced features are in development.';
+      ', multi-device sync, and more advanced features are in development.';
 
   @override
   String get premium_supportTitle => 'Support Open Source';

@@ -27,7 +27,11 @@ class CardStyleSettingsPage extends ConsumerWidget {
       ..port = 8888
       ..createdAt = DateTime.now();
 
-    const mockStatus = ServerCardStatus(isLoading: false, hasData: true);
+    const mockStatus = ServerCardStatus(
+      isLoading: false,
+      hasData: true,
+      hasRefreshError: false,
+    );
 
     return FrostedScaffold(
       title: l10n.settings_appearance_cardStyleTitle,

@@ -19,6 +19,7 @@
 "widget.fallback.open_app" = "打开一次 Mono Dash 以启用小组件刷新。";
 "widget.fallback.tap_refresh" = "轻点刷新以获取此服务器数据。";
 "widget.action.refresh" = "刷新";
+"widget.status.unknown" = "未知";
 "widget.empty.title" = "无服务器";
 "widget.empty.subtitle" = "在 Mono Dash 中添加服务器。";
 "widget.metric.memory" = "内存";

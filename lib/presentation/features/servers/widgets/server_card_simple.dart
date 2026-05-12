@@ -225,7 +225,7 @@ class _SimpleStatusPill extends StatelessWidget {
     }
 
     final latencyMs = status.latencyMs;
-    if (status.hasData && latencyMs != null) {
+    if (status.hasFreshData && latencyMs != null) {
       final isSlow = latencyMs > 500;
       final color = isSlow
           ? CupertinoColors.systemOrange.resolveFrom(context)
@@ -262,7 +262,7 @@ class _SimpleStatusPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: status.hasData
+        color: status.hasFreshData
             ? _SimpleCardColors.onlineBackground(context)
             : _SimpleCardColors.unknownBackground(context),
         borderRadius: BorderRadius.circular(999),
@@ -272,7 +272,7 @@ class _SimpleStatusPill extends StatelessWidget {
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w700,
-          color: status.hasData
+          color: status.hasFreshData
               ? _SimpleCardColors.online(context)
               : _SimpleCardColors.unknown(context),
           height: 1,
@@ -585,8 +585,8 @@ class _SimpleCardColors {
       online(context).withValues(alpha: isDark(context) ? 0.16 : 0.14);
 
   static Color unknown(BuildContext context) =>
-      isDark(context) ? const Color(0xFFFBBF24) : const Color(0xFFB54708);
+      isDark(context) ? const Color(0xFF98A2B3) : const Color(0xFF667085);
 
   static Color unknownBackground(BuildContext context) =>
-      unknown(context).withValues(alpha: isDark(context) ? 0.18 : 0.14);
+      unknown(context).withValues(alpha: isDark(context) ? 0.16 : 0.12);
 }

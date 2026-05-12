@@ -26,7 +26,7 @@ class ServersPage extends ConsumerStatefulWidget {
 }
 
 class _ServersPageState extends ConsumerState<ServersPage> with RouteAware {
-  static const _refreshInterval = Duration(seconds: 3);
+  static const _refreshInterval = Duration(seconds: 5);
   List<FloatingTabItemData> _tabItems(BuildContext context) => [
     FloatingTabItemData(
       icon: CupertinoIcons.rectangle_stack,

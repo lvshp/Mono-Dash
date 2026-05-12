@@ -5,28 +5,34 @@ class ServerCardStatus {
   const ServerCardStatus({
     required this.isLoading,
     required this.hasData,
+    required this.hasRefreshError,
     this.latencyMs,
   });
 
   factory ServerCardStatus.fromSnapshot({
     required bool isLoading,
     required bool hasData,
+    required bool hasError,
     int? latencyMs,
   }) {
     return ServerCardStatus(
       isLoading: isLoading && !hasData,
       hasData: hasData,
+      hasRefreshError: hasError,
       latencyMs: latencyMs,
     );
   }
 
   final bool isLoading;
   final bool hasData;
+  final bool hasRefreshError;
   final int? latencyMs;
 
-  String get terminalLabel => hasData ? 'online' : 'unknown';
+  bool get hasFreshData => hasData && !hasRefreshError;
+
+  String get terminalLabel => hasFreshData ? 'online' : 'unknown';
   String simpleLabel(AppLocalizations l10n) =>
-      hasData ? l10n.servers_online : l10n.common_unknown;
+      hasFreshData ? l10n.servers_online : l10n.common_unknown;
 }
 
 DiskUsage? primaryDisk(List<DiskUsage> disks) {
