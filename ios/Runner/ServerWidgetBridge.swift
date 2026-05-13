@@ -13,7 +13,12 @@ final class ServerWidgetBridge {
   private static let settingsKey = "server_widget_settings"
   private static let simpleWidgetKind = "ServerStatusWidget"
   private static let horizontalMetricsWidgetKind = "ServerStatusWidgetHorizontalMetrics"
-  private static let widgetKinds = [simpleWidgetKind, horizontalMetricsWidgetKind]
+  private static let overviewWidgetKind = "ServerOverviewWidget"
+  private static let widgetKinds = [
+    simpleWidgetKind,
+    horizontalMetricsWidgetKind,
+    overviewWidgetKind
+  ]
 
   static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(

@@ -152,6 +152,7 @@ private func percent(_ progress: Double) -> String {
   return "\(Int(value.rounded()))%"
 }
 
+@available(iOSApplicationExtension 16.1, *)
 private func byteProgress(
   _ state: FileTransferActivityAttributes.ContentState
 ) -> String {

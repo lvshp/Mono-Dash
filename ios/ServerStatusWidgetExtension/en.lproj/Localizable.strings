@@ -5,6 +5,9 @@
 "widget.intent.server.title" = "Server";
 "widget.intent.server.description" = "Choose the server shown by the widget.";
 "widget.intent.server.parameter" = "Server";
+"widget.intent.overview.title" = "Server Overview";
+"widget.intent.overview.description" = "Choose servers shown by the overview widget. Leave empty to show all.";
+"widget.intent.servers.parameter" = "Servers";
 "widget.intent.style.parameter" = "Card Style";
 "widget.intent.language.parameter" = "Language";
 "widget.intent.summary" = "Show \(\.$server) as \(\.$cardStyle)";
@@ -40,6 +43,16 @@
 "widget.display.description.simple" = "Simple server status card.";
 "widget.display.name.horizontal_metrics" = "Mono Dash Server Metrics";
 "widget.display.description.horizontal_metrics" = "Server status card with horizontal CPU, memory, and disk metrics.";
+"widget.display.name.overview" = "Mono Dash Overview";
+"widget.display.description.overview" = "Summarize multiple server controllers in one widget.";
+"widget.overview.title" = "Server Overview";
+"widget.overview.online_count" = "%d/%d online";
+"widget.overview.summary" = "%d warnings · %d offline";
+"widget.overview.more" = "+%d more";
+"widget.overview.online" = "%d online";
+"widget.overview.warning" = "%d warnings";
+"widget.overview.failed" = "%d offline";
+"widget.overview.pending" = "%d pending";
 "transfer.activity.uploading" = "Uploading";
 "transfer.activity.downloading" = "Downloading";
 "transfer.activity.preparing" = "Preparing";

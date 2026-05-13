@@ -27,6 +27,10 @@
 		4F1A00310000000000000001 /* TransferActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1A00320000000000000001 /* TransferActivityAttributes.swift */; };
 		4F1A00400000000000000001 /* FileTransferLiveActivityBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1A00410000000000000001 /* FileTransferLiveActivityBridge.swift */; };
 		4F1A00500000000000000001 /* FileTransferActivityWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1A00510000000000000001 /* FileTransferActivityWidget.swift */; };
+		4F2A00200000000000000001 /* ServerStatusWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 4F2A00100000000000000001 /* ServerStatusWidget.intentdefinition */; };
+		4F2A00300000000000000001 /* ServerStatusWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 4F2A00100000000000000001 /* ServerStatusWidget.intentdefinition */; };
+		4F2A00500000000000000001 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2A00400000000000000001 /* IntentHandler.swift */; };
+		4F2A00900000000000000001 /* ServerStatusWidgetIntentsExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 4F2A00800000000000000001 /* ServerStatusWidgetIntentsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		D0DA84AA339E4F864212C4BB /* ServerStatusWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 352EADBB0169464A7E886190 /* ServerStatusWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E8D269946616938DA21FB4B8 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50C0E8586D0DF805F22613C8 /* Pods_RunnerTests.framework */; };
 		FCF507B5AFD7E4E3D4CF144E /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63492E89C6129C6799A17A6D /* Pods_Runner.framework */; };
@@ -47,6 +51,13 @@
 			remoteGlobalIDString = 30C14063540D5B96FF01A626;
 			remoteInfo = ServerStatusWidgetExtension;
 		};
+		4F2A00F00000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4F2A00B00000000000000001;
+			remoteInfo = ServerStatusWidgetIntentsExtension;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -57,6 +68,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				D0DA84AA339E4F864212C4BB /* ServerStatusWidgetExtension.appex in Embed App Extensions */,
+				4F2A00900000000000000001 /* ServerStatusWidgetIntentsExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -88,6 +100,11 @@
 		4F1A00320000000000000001 /* TransferActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferActivityAttributes.swift; sourceTree = "<group>"; };
 		4F1A00410000000000000001 /* FileTransferLiveActivityBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTransferLiveActivityBridge.swift; sourceTree = "<group>"; };
 		4F1A00510000000000000001 /* FileTransferActivityWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTransferActivityWidget.swift; sourceTree = "<group>"; };
+		4F2A00100000000000000001 /* ServerStatusWidget.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = ServerStatusWidget.intentdefinition; sourceTree = "<group>"; };
+		4F2A00400000000000000001 /* IntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentHandler.swift; sourceTree = "<group>"; };
+		4F2A00600000000000000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4F2A00700000000000000001 /* ServerStatusWidgetIntentsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ServerStatusWidgetIntentsExtension.entitlements; sourceTree = "<group>"; };
+		4F2A00800000000000000001 /* ServerStatusWidgetIntentsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ServerStatusWidgetIntentsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		50C0E8586D0DF805F22613C8 /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		63492E89C6129C6799A17A6D /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -141,6 +158,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4F2A00E00000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -169,6 +193,7 @@
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
 				7840C1B4C548818625D1CB59 /* ServerStatusWidgetExtension */,
+				4F2A00A00000000000000001 /* ServerStatusWidgetIntentsExtension */,
 				97C146EF1CF9000F007C117D /* Products */,
 				331C8082294A63A400263BE5 /* RunnerTests */,
 				E4172B423BB077386123D132 /* Pods */,
@@ -181,6 +206,7 @@
 			children = (
 				97C146EE1CF9000F007C117D /* Runner.app */,
 				352EADBB0169464A7E886190 /* ServerStatusWidgetExtension.appex */,
+				4F2A00800000000000000001 /* ServerStatusWidgetIntentsExtension.appex */,
 				331C8081294A63A400263BE5 /* RunnerTests.xctest */,
 			);
 			name = Products;
@@ -212,6 +238,7 @@
 			isa = PBXGroup;
 			children = (
 				3D68CCB9A544FE1CC82DC1E5 /* ServerStatusWidget.swift */,
+				4F2A00100000000000000001 /* ServerStatusWidget.intentdefinition */,
 				4F1A00110000000000000001 /* ServerStatusWidgetSimpleStyle.swift */,
 				4F1A00210000000000000001 /* ServerStatusWidgetHorizontalMetricsStyle.swift */,
 				4F1A00510000000000000001 /* FileTransferActivityWidget.swift */,
@@ -221,6 +248,16 @@
 				832F6EF12EFF76E60953B6D8 /* ServerStatusWidgetExtension.entitlements */,
 			);
 			path = ServerStatusWidgetExtension;
+			sourceTree = "<group>";
+		};
+		4F2A00A00000000000000001 /* ServerStatusWidgetIntentsExtension */ = {
+			isa = PBXGroup;
+			children = (
+				4F2A00400000000000000001 /* IntentHandler.swift */,
+				4F2A00600000000000000001 /* Info.plist */,
+				4F2A00700000000000000001 /* ServerStatusWidgetIntentsExtension.entitlements */,
+			);
+			path = ServerStatusWidgetIntentsExtension;
 			sourceTree = "<group>";
 		};
 		E4172B423BB077386123D132 /* Pods */ = {
@@ -285,6 +322,7 @@
 			);
 			dependencies = (
 				AA94082E93139403457543F7 /* PBXTargetDependency */,
+				4F2A01000000000000000001 /* PBXTargetDependency */,
 			);
 			name = Runner;
 			productName = Runner;
@@ -308,6 +346,23 @@
 			productReference = 352EADBB0169464A7E886190 /* ServerStatusWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		4F2A00B00000000000000001 /* ServerStatusWidgetIntentsExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4F2A01400000000000000001 /* Build configuration list for PBXNativeTarget "ServerStatusWidgetIntentsExtension" */;
+			buildPhases = (
+				4F2A00C00000000000000001 /* Sources */,
+				4F2A00D00000000000000001 /* Resources */,
+				4F2A00E00000000000000001 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ServerStatusWidgetIntentsExtension;
+			productName = ServerStatusWidgetIntentsExtension;
+			productReference = 4F2A00800000000000000001 /* ServerStatusWidgetIntentsExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -319,6 +374,9 @@
 				ORGANIZATIONNAME = "";
 				TargetAttributes = {
 					30C14063540D5B96FF01A626 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+					4F2A00B00000000000000001 = {
 						CreatedOnToolsVersion = 15.0;
 					};
 					331C8080294A63A400263BE5 = {
@@ -347,6 +405,7 @@
 			targets = (
 				97C146ED1CF9000F007C117D /* Runner */,
 				30C14063540D5B96FF01A626 /* ServerStatusWidgetExtension */,
+				4F2A00B00000000000000001 /* ServerStatusWidgetIntentsExtension */,
 				331C8080294A63A400263BE5 /* RunnerTests */,
 			);
 		};
@@ -378,6 +437,13 @@
 			files = (
 				A4E7AC911A5D4F3E80D9B75C /* Assets.xcassets in Resources */,
 				A4E7AC955D2F4E199F079B2C /* Localizable.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F2A00D00000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -508,8 +574,18 @@
 				B972D53AEF707CB630677405 /* ServerStatusWidget.swift in Sources */,
 				4F1A00100000000000000001 /* ServerStatusWidgetSimpleStyle.swift in Sources */,
 				4F1A00200000000000000001 /* ServerStatusWidgetHorizontalMetricsStyle.swift in Sources */,
+				4F2A00200000000000000001 /* ServerStatusWidget.intentdefinition in Sources */,
 				4F1A00310000000000000001 /* TransferActivityAttributes.swift in Sources */,
 				4F1A00500000000000000001 /* FileTransferActivityWidget.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F2A00C00000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F2A00500000000000000001 /* IntentHandler.swift in Sources */,
+				4F2A00300000000000000001 /* ServerStatusWidget.intentdefinition in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -525,6 +601,11 @@
 			isa = PBXTargetDependency;
 			target = 30C14063540D5B96FF01A626 /* ServerStatusWidgetExtension */;
 			targetProxy = E4B6D146F0985C28A6E3E291 /* PBXContainerItemProxy */;
+		};
+		4F2A01000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4F2A00B00000000000000001 /* ServerStatusWidgetIntentsExtension */;
+			targetProxy = 4F2A00F00000000000000001 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -893,13 +974,13 @@
 				DEVELOPMENT_TEAM = 53R8Z6YBWK;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ServerStatusWidgetExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
 				PRODUCT_BUNDLE_IDENTIFIER = "cc.boring-lab.monodash.ServerStatusWidgetExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -928,13 +1009,13 @@
 				DEVELOPMENT_TEAM = 53R8Z6YBWK;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ServerStatusWidgetExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
 				PRODUCT_BUNDLE_IDENTIFIER = "cc.boring-lab.monodash.ServerStatusWidgetExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -962,14 +1043,114 @@
 				DEVELOPMENT_TEAM = 53R8Z6YBWK;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ServerStatusWidgetExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
 				PRODUCT_BUNDLE_IDENTIFIER = "cc.boring-lab.monodash.ServerStatusWidgetExtension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Profile;
+		};
+		4F2A01100000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9740EEB31CF90195004384FC /* Generated.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = ServerStatusWidgetIntentsExtension/ServerStatusWidgetIntentsExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = 53R8Z6YBWK;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ServerStatusWidgetIntentsExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = "cc.boring-lab.monodash.ServerStatusWidgetIntentsExtension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4F2A01200000000000000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9740EEB31CF90195004384FC /* Generated.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = ServerStatusWidgetIntentsExtension/ServerStatusWidgetIntentsExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = 53R8Z6YBWK;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ServerStatusWidgetIntentsExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = "cc.boring-lab.monodash.ServerStatusWidgetIntentsExtension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		4F2A01300000000000000001 /* Profile */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9740EEB31CF90195004384FC /* Generated.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = ServerStatusWidgetIntentsExtension/ServerStatusWidgetIntentsExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = 53R8Z6YBWK;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ServerStatusWidgetIntentsExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = "cc.boring-lab.monodash.ServerStatusWidgetIntentsExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1021,6 +1202,16 @@
 				D4D3EF7CCBFCDA61797E609B /* Debug */,
 				6CE3351C9A7337B456ACFAC7 /* Release */,
 				7E4F2A7DF9FBB51DA83CE1BB /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4F2A01400000000000000001 /* Build configuration list for PBXNativeTarget "ServerStatusWidgetIntentsExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4F2A01100000000000000001 /* Debug */,
+				4F2A01200000000000000001 /* Release */,
+				4F2A01300000000000000001 /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

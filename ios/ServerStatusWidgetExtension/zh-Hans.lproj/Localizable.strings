@@ -5,6 +5,9 @@
 "widget.intent.server.title" = "服务器";
 "widget.intent.server.description" = "选择小组件展示的服务器。";
 "widget.intent.server.parameter" = "服务器";
+"widget.intent.overview.title" = "控制器总览";
+"widget.intent.overview.description" = "选择总览小组件展示的控制器；不选择则展示全部。";
+"widget.intent.servers.parameter" = "控制器";
 "widget.intent.style.parameter" = "卡片样式";
 "widget.intent.language.parameter" = "语言";
 "widget.intent.summary" = "显示 \(\.$server)，样式为 \(\.$cardStyle)";
@@ -40,6 +43,16 @@
 "widget.display.description.simple" = "简洁服务器状态卡片。";
 "widget.display.name.horizontal_metrics" = "Mono Dash 指标";
 "widget.display.description.horizontal_metrics" = "横排展示 CPU、内存和磁盘指标的服务器状态卡片。";
+"widget.display.name.overview" = "Mono Dash 总览";
+"widget.display.description.overview" = "在一个小组件中汇总多个控制器的运行状态。";
+"widget.overview.title" = "控制器总览";
+"widget.overview.online_count" = "%d/%d 在线";
+"widget.overview.summary" = "%d 警告 · %d 离线";
+"widget.overview.more" = "+%d 更多";
+"widget.overview.online" = "%d 在线";
+"widget.overview.warning" = "%d 警告";
+"widget.overview.failed" = "%d 离线";
+"widget.overview.pending" = "%d 等待";
 "transfer.activity.uploading" = "正在上传";
 "transfer.activity.downloading" = "正在下载";
 "transfer.activity.preparing" = "准备中";

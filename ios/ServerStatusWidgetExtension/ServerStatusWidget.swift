@@ -1,5 +1,6 @@
 import AppIntents
 import CryptoKit
+import Intents
 import Security
 import SwiftUI
 import WidgetKit
@@ -15,7 +16,12 @@ private let revealedIPServerIdsKey = "server_widget_revealed_ip_server_ids"
 private let skipNextFetchServerIdsKey = "server_widget_skip_next_fetch_server_ids"
 private let simpleWidgetKind = "ServerStatusWidget"
 private let horizontalMetricsWidgetKind = "ServerStatusWidgetHorizontalMetrics"
-private let serverWidgetKinds = [simpleWidgetKind, horizontalMetricsWidgetKind]
+private let overviewWidgetKind = "ServerOverviewWidget"
+private let serverWidgetKinds = [
+  simpleWidgetKind,
+  horizontalMetricsWidgetKind,
+  overviewWidgetKind
+]
 
 private func reloadServerWidgetTimelines() {
   for kind in serverWidgetKinds {
@@ -73,6 +79,15 @@ extension View {
       self.contentTransition(.numericText())
     } else {
       self
+    }
+  }
+
+  @ViewBuilder
+  func serverWidgetBackground() -> some View {
+    if #available(iOSApplicationExtension 17.0, *) {
+      self.containerBackground(.background, for: .widget)
+    } else {
+      self.background(Color(.systemBackground))
     }
   }
 }
@@ -585,6 +600,7 @@ enum FetchError: Error {
   }
 }
 
+@available(iOSApplicationExtension 17.0, *)
 struct ServerEntity: AppEntity, Identifiable {
   static var typeDisplayRepresentation = TypeDisplayRepresentation(
     name: LocalizedStringResource("widget.intent.server.type")
@@ -599,6 +615,7 @@ struct ServerEntity: AppEntity, Identifiable {
   }
 }
 
+@available(iOSApplicationExtension 17.0, *)
 struct ServerEntityQuery: EntityStringQuery {
   func entities(for identifiers: [ServerEntity.ID]) async throws -> [ServerEntity] {
     WidgetStore.servers()
@@ -617,10 +634,13 @@ struct ServerEntityQuery: EntityStringQuery {
   }
 }
 
-enum ServerWidgetCardStyle: String, AppEnum {
+enum ServerWidgetCardStyle: String {
   case simple
   case horizontalMetrics
+}
 
+@available(iOSApplicationExtension 17.0, *)
+extension ServerWidgetCardStyle: AppEnum {
   static var typeDisplayRepresentation = TypeDisplayRepresentation(
     name: LocalizedStringResource("widget.card.style.type")
   )
@@ -630,6 +650,7 @@ enum ServerWidgetCardStyle: String, AppEnum {
   ]
 }
 
+@available(iOSApplicationExtension 17.0, *)
 enum ServerWidgetLanguage: String, AppEnum {
   case followApp
   case zh
@@ -656,6 +677,7 @@ enum ServerWidgetLanguage: String, AppEnum {
   }
 }
 
+@available(iOSApplicationExtension 17.0, *)
 struct ServerSelectionIntent: WidgetConfigurationIntent {
   static var title = LocalizedStringResource("widget.intent.server.title")
   static var description = IntentDescription("widget.intent.server.description")
@@ -671,6 +693,19 @@ struct ServerSelectionIntent: WidgetConfigurationIntent {
   }
 }
 
+@available(iOSApplicationExtension 17.0, *)
+struct ServerOverviewSelectionIntent: WidgetConfigurationIntent {
+  static var title = LocalizedStringResource("widget.intent.overview.title")
+  static var description = IntentDescription("widget.intent.overview.description")
+
+  @Parameter(title: "widget.intent.servers.parameter")
+  var servers: [ServerEntity]?
+
+  @Parameter(title: "widget.intent.language.parameter", default: .followApp)
+  var language: ServerWidgetLanguage
+}
+
+@available(iOSApplicationExtension 17.0, *)
 struct RefreshServerIntent: AppIntent {
   static var title = LocalizedStringResource("widget.intent.refresh.title")
 
@@ -694,6 +729,7 @@ struct RefreshServerIntent: AppIntent {
   }
 }
 
+@available(iOSApplicationExtension 17.0, *)
 struct ToggleServerIPVisibilityIntent: AppIntent {
   static var title = LocalizedStringResource("widget.intent.toggle_ip.title")
 
@@ -727,6 +763,69 @@ struct ServerEntry: TimelineEntry {
   let languageCode: String?
 }
 
+private func placeholderServerEntry(cardStyle: ServerWidgetCardStyle) -> ServerEntry {
+  ServerEntry(
+    date: Date(),
+    server: WidgetServer(
+      id: 1,
+      name: "Mono Dash",
+      displayName: "Mono Dash",
+      host: "127.0.0.1",
+      port: 10086,
+      isHttps: true,
+      allowInsecureConnections: false,
+      sortIndex: 0
+    ),
+    snapshot: ServerSnapshot(
+      id: 1,
+      name: "Mono Dash",
+      displayName: "Mono Dash",
+      host: "127.0.0.1",
+      port: 10086,
+      isHttps: true,
+      allowInsecureConnections: false,
+      sortIndex: 0,
+      title: "Mono Dash",
+      subtitle: "Ubuntu  |  10.0.0.2",
+      ipAddress: "10.0.0.2",
+      osName: "Ubuntu",
+      uptimeSeconds: 183_600,
+      cpuPercent: 24,
+      memoryPercent: 58,
+      diskPercent: 43,
+      websiteCount: 4,
+      databaseCount: 2,
+      appCount: 8,
+      taskCount: 3,
+      netBytesSent: 1_200_000_000,
+      netBytesRecv: 8_600_000_000,
+      uploadBytesPerSecond: 52_000,
+      downloadBytesPerSecond: 380_000,
+      totalTrafficBytes: 9_800_000_000,
+      latencyMs: 86,
+      updatedAt: Date()
+    ),
+    errorMessage: nil,
+    cardStyle: cardStyle,
+    languageCode: WidgetStore.settings().appLocaleCode
+  )
+}
+
+private func emptyServerEntry(
+  cardStyle: ServerWidgetCardStyle,
+  languageCode: String?
+) -> ServerEntry {
+  ServerEntry(
+    date: Date(),
+    server: nil,
+    snapshot: nil,
+    errorMessage: nil,
+    cardStyle: cardStyle,
+    languageCode: languageCode
+  )
+}
+
+@available(iOSApplicationExtension 17.0, *)
 struct ServerStatusProvider: AppIntentTimelineProvider {
   let cardStyle: ServerWidgetCardStyle
 
@@ -735,51 +834,7 @@ struct ServerStatusProvider: AppIntentTimelineProvider {
   }
 
   func placeholder(in context: Context) -> ServerEntry {
-    ServerEntry(
-      date: Date(),
-      server: WidgetServer(
-        id: 1,
-        name: "Mono Dash",
-        displayName: "Mono Dash",
-        host: "127.0.0.1",
-        port: 10086,
-        isHttps: true,
-        allowInsecureConnections: false,
-        sortIndex: 0
-      ),
-      snapshot: ServerSnapshot(
-        id: 1,
-        name: "Mono Dash",
-        displayName: "Mono Dash",
-        host: "127.0.0.1",
-        port: 10086,
-        isHttps: true,
-        allowInsecureConnections: false,
-        sortIndex: 0,
-        title: "Mono Dash",
-        subtitle: "Ubuntu  |  10.0.0.2",
-        ipAddress: "10.0.0.2",
-        osName: "Ubuntu",
-        uptimeSeconds: 183_600,
-        cpuPercent: 24,
-        memoryPercent: 58,
-        diskPercent: 43,
-        websiteCount: 4,
-        databaseCount: 2,
-        appCount: 8,
-        taskCount: 3,
-        netBytesSent: 1_200_000_000,
-        netBytesRecv: 8_600_000_000,
-        uploadBytesPerSecond: 52_000,
-        downloadBytesPerSecond: 380_000,
-        totalTrafficBytes: 9_800_000_000,
-        latencyMs: 86,
-        updatedAt: Date()
-      ),
-      errorMessage: nil,
-      cardStyle: cardStyle,
-      languageCode: WidgetStore.settings().appLocaleCode
-    )
+    placeholderServerEntry(cardStyle: cardStyle)
   }
 
   func snapshot(
@@ -787,11 +842,7 @@ struct ServerStatusProvider: AppIntentTimelineProvider {
     in context: Context
   ) async -> ServerEntry {
     guard let server = WidgetStore.selectedServer(id: configuration.server?.id) else {
-      return ServerEntry(
-        date: Date(),
-        server: nil,
-        snapshot: nil,
-        errorMessage: nil,
+      return emptyServerEntry(
         cardStyle: cardStyle,
         languageCode: configuration.language.resolvedCode
       )
@@ -816,11 +867,7 @@ struct ServerStatusProvider: AppIntentTimelineProvider {
     guard let server = WidgetStore.selectedServer(id: configuration.server?.id) else {
       return Timeline(
         entries: [
-          ServerEntry(
-            date: Date(),
-            server: nil,
-            snapshot: nil,
-            errorMessage: nil,
+          emptyServerEntry(
             cardStyle: cardStyle,
             languageCode: configuration.language.resolvedCode
           )
@@ -842,6 +889,60 @@ struct ServerStatusProvider: AppIntentTimelineProvider {
       languageCode: configuration.language.resolvedCode
     )
     return Timeline(entries: [entry], policy: .after(Date().addingTimeInterval(900)))
+  }
+}
+
+struct LegacyServerStatusProvider: IntentTimelineProvider {
+  let cardStyle: ServerWidgetCardStyle
+
+  init(cardStyle: ServerWidgetCardStyle) {
+    self.cardStyle = cardStyle
+  }
+
+  func placeholder(in context: Context) -> ServerEntry {
+    placeholderServerEntry(cardStyle: cardStyle)
+  }
+
+  func getSnapshot(
+    for configuration: SelectServerIntent,
+    in context: Context,
+    completion: @escaping (ServerEntry) -> Void
+  ) {
+    Task {
+      completion(await entry(for: configuration, context: context))
+    }
+  }
+
+  func getTimeline(
+    for configuration: SelectServerIntent,
+    in context: Context,
+    completion: @escaping (Timeline<ServerEntry>) -> Void
+  ) {
+    Task {
+      let entry = await entry(for: configuration, context: context)
+      completion(Timeline(entries: [entry], policy: .after(Date().addingTimeInterval(900))))
+    }
+  }
+
+  private func entry(for configuration: SelectServerIntent, context: Context) async -> ServerEntry {
+    let serverId = configuration.server?.identifier
+    guard let server = WidgetStore.selectedServer(id: serverId) else {
+      return emptyServerEntry(
+        cardStyle: cardStyle,
+        languageCode: WidgetStore.settings().appLocaleCode
+      )
+    }
+    let snapshot = context.isPreview
+      ? WidgetStore.selectedSnapshot(id: String(server.id)).1
+      : await ServerWidgetFetcher.fetch(server: server)
+    return ServerEntry(
+      date: Date(),
+      server: server,
+      snapshot: snapshot,
+      errorMessage: WidgetStore.selectedError(id: String(server.id)),
+      cardStyle: cardStyle,
+      languageCode: WidgetStore.settings().appLocaleCode
+    )
   }
 }
 
@@ -868,7 +969,7 @@ struct ServerStatusWidgetEntryView: View {
         emptyCard
       }
     }
-    .containerBackground(.background, for: .widget)
+    .serverWidgetBackground()
   }
 
   func smallHeader(_ snapshot: ServerSnapshot) -> some View {
@@ -891,14 +992,7 @@ struct ServerStatusWidgetEntryView: View {
 
       Spacer(minLength: 0)
 
-      Button(intent: RefreshServerIntent(serverId: String(snapshot.id))) {
-        Image(systemName: "arrow.clockwise")
-          .font(.system(size: 10, weight: .bold))
-          .foregroundStyle(.secondary)
-          .frame(width: 20, height: 20)
-          .background(.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 6))
-      }
-      .buttonStyle(.plain)
+      refreshButton(serverId: snapshot.id, size: 20, iconSize: 10)
     }
   }
 
@@ -915,11 +1009,7 @@ struct ServerStatusWidgetEntryView: View {
         .foregroundStyle(.secondary)
         .lineLimit(3)
       Spacer(minLength: 0)
-      Button(intent: RefreshServerIntent(serverId: String(server.id))) {
-        Label(strings.string("widget.action.refresh"), systemImage: "arrow.clockwise")
-          .font(.caption.weight(.semibold))
-      }
-      .buttonStyle(.bordered)
+      labeledRefreshButton(serverId: server.id)
     }
     .padding(16)
   }
@@ -969,17 +1059,7 @@ struct ServerStatusWidgetEntryView: View {
           .lineLimit(1)
           .minimumScaleFactor(0.9)
 
-        HStack(spacing: 5) {
-          ipAddressText(ip: ip, isVisible: isIPVisible)
-
-          Button(intent: ToggleServerIPVisibilityIntent(serverId: String(snapshot.id))) {
-            Image(systemName: isIPVisible ? "eye.slash" : "eye")
-              .font(.caption2.weight(.bold))
-              .foregroundStyle(.secondary)
-              .frame(width: 18, height: 18)
-          }
-          .buttonStyle(.plain)
-        }
+        ipAddressRow(ip: ip, isIPVisible: isIPVisible, serverId: snapshot.id)
       }
 
       Spacer(minLength: 0)
@@ -1004,14 +1084,51 @@ struct ServerStatusWidgetEntryView: View {
       .padding(.vertical, 4)
       .background(tint.opacity(latencyMs == nil ? 0.12 : 0.1), in: RoundedRectangle(cornerRadius: 6))
 
-      Button(intent: RefreshServerIntent(serverId: String(snapshot.id))) {
+      refreshButton(serverId: snapshot.id, size: 24, iconSize: 12)
+    }
+  }
+
+  @ViewBuilder
+  private func ipAddressRow(ip: String, isIPVisible: Bool, serverId: Int) -> some View {
+    if #available(iOSApplicationExtension 17.0, *) {
+      HStack(spacing: 5) {
+        ipAddressText(ip: ip, isVisible: isIPVisible)
+
+        Button(intent: ToggleServerIPVisibilityIntent(serverId: String(serverId))) {
+          Image(systemName: isIPVisible ? "eye.slash" : "eye")
+            .font(.caption2.weight(.bold))
+            .foregroundStyle(.secondary)
+            .frame(width: 18, height: 18)
+        }
+        .buttonStyle(.plain)
+      }
+    } else {
+      ipAddressText(ip: ip, isVisible: true)
+    }
+  }
+
+  @ViewBuilder
+  private func refreshButton(serverId: Int, size: CGFloat, iconSize: CGFloat) -> some View {
+    if #available(iOSApplicationExtension 17.0, *) {
+      Button(intent: RefreshServerIntent(serverId: String(serverId))) {
         Image(systemName: "arrow.clockwise")
-          .font(.caption.weight(.bold))
+          .font(.system(size: iconSize, weight: .bold))
           .foregroundStyle(.secondary)
-          .frame(width: 24, height: 24)
+          .frame(width: size, height: size)
           .background(.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 6))
       }
       .buttonStyle(.plain)
+    }
+  }
+
+  @ViewBuilder
+  private func labeledRefreshButton(serverId: Int) -> some View {
+    if #available(iOSApplicationExtension 17.0, *) {
+      Button(intent: RefreshServerIntent(serverId: String(serverId))) {
+        Label(strings.string("widget.action.refresh"), systemImage: "arrow.clockwise")
+          .font(.caption.weight(.semibold))
+      }
+      .buttonStyle(.bordered)
     }
   }
 
@@ -1079,14 +1196,7 @@ struct ServerStatusWidgetEntryView: View {
       }
 
       if let serverId {
-        Button(intent: RefreshServerIntent(serverId: String(serverId))) {
-          Image(systemName: "arrow.clockwise")
-            .font(.caption.weight(.bold))
-            .foregroundStyle(.secondary)
-            .frame(width: 24, height: 24)
-            .background(.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 6))
-        }
-        .buttonStyle(.plain)
+        refreshButton(serverId: serverId, size: 24, iconSize: 12)
       }
     }
   }
@@ -1381,6 +1491,538 @@ struct ServerStatusWidgetEntryView: View {
   }
 }
 
+struct ServerOverviewItem: Identifiable {
+  let server: WidgetServer
+  let snapshot: ServerSnapshot?
+  let errorMessage: String?
+
+  var id: Int { server.id }
+
+  var status: ServerOverviewStatus {
+    guard let snapshot else {
+      return errorMessage == nil ? .pending : .failed
+    }
+    if errorMessage != nil { return .warning }
+    if snapshot.cpuPercent >= 85 { return .warning }
+    if snapshot.memoryPercent >= 85 { return .warning }
+    if (snapshot.diskPercent ?? 0) >= 85 { return .warning }
+    if snapshot.latencyMs > 500 { return .warning }
+    return .online
+  }
+
+  var sortRank: Int {
+    status.sortRank
+  }
+}
+
+enum ServerOverviewStatus: Equatable {
+  case online
+  case warning
+  case failed
+  case pending
+
+  var sortRank: Int {
+    switch self {
+    case .failed:
+      return 0
+    case .warning:
+      return 1
+    case .pending:
+      return 2
+    case .online:
+      return 3
+    }
+  }
+
+  var tint: Color {
+    switch self {
+    case .online:
+      return .green
+    case .warning:
+      return .orange
+    case .failed:
+      return .red
+    case .pending:
+      return .secondary
+    }
+  }
+}
+
+struct ServerOverviewEntry: TimelineEntry {
+  let date: Date
+  let items: [ServerOverviewItem]
+  let selectedCount: Int
+  let languageCode: String?
+}
+
+private func placeholderServerOverviewEntry() -> ServerOverviewEntry {
+  let base = placeholderServerEntry(cardStyle: .horizontalMetrics)
+  let sampleServers = [
+    base.server!,
+    WidgetServer(
+      id: 2,
+      name: "prod-2",
+      displayName: "prod-2",
+      host: "10.0.0.3",
+      port: 10086,
+      isHttps: true,
+      allowInsecureConnections: false,
+      sortIndex: 1
+    ),
+    WidgetServer(
+      id: 3,
+      name: "backup",
+      displayName: "backup",
+      host: "10.0.0.4",
+      port: 10086,
+      isHttps: true,
+      allowInsecureConnections: false,
+      sortIndex: 2
+    )
+  ]
+  let sampleSnapshots = sampleServers.enumerated().map { index, server in
+    ServerSnapshot(
+      id: server.id,
+      name: server.name,
+      displayName: server.displayName,
+      host: server.host,
+      port: server.port,
+      isHttps: server.isHttps,
+      allowInsecureConnections: server.allowInsecureConnections,
+      sortIndex: server.sortIndex,
+      title: server.title,
+      subtitle: index == 2 ? "Debian  |  10.0.0.4" : "Ubuntu  |  \(server.host)",
+      ipAddress: server.host,
+      osName: index == 2 ? "Debian" : "Ubuntu",
+      uptimeSeconds: 183_600 - index * 18_000,
+      cpuPercent: [24, 72, 88][index],
+      memoryPercent: [58, 61, 82][index],
+      diskPercent: [43, 69, 91][index],
+      websiteCount: 4,
+      databaseCount: 2,
+      appCount: 8,
+      taskCount: 3,
+      netBytesSent: 1_200_000_000,
+      netBytesRecv: 8_600_000_000,
+      uploadBytesPerSecond: 52_000,
+      downloadBytesPerSecond: 380_000,
+      totalTrafficBytes: 9_800_000_000,
+      latencyMs: [86, 140, 640][index],
+      updatedAt: Date()
+    )
+  }
+
+  return ServerOverviewEntry(
+    date: Date(),
+    items: zip(sampleServers, sampleSnapshots).map {
+      ServerOverviewItem(server: $0.0, snapshot: $0.1, errorMessage: nil)
+    },
+    selectedCount: sampleServers.count,
+    languageCode: WidgetStore.settings().appLocaleCode
+  )
+}
+
+@available(iOSApplicationExtension 17.0, *)
+struct ServerOverviewProvider: AppIntentTimelineProvider {
+  func placeholder(in context: Context) -> ServerOverviewEntry {
+    placeholderServerOverviewEntry()
+  }
+
+  func snapshot(
+    for configuration: ServerOverviewSelectionIntent,
+    in context: Context
+  ) async -> ServerOverviewEntry {
+    await entry(for: configuration, context: context, shouldFetch: !context.isPreview)
+  }
+
+  func timeline(
+    for configuration: ServerOverviewSelectionIntent,
+    in context: Context
+  ) async -> Timeline<ServerOverviewEntry> {
+    let entry = await entry(for: configuration, context: context, shouldFetch: true)
+    return Timeline(entries: [entry], policy: .after(Date().addingTimeInterval(900)))
+  }
+
+  private func entry(
+    for configuration: ServerOverviewSelectionIntent,
+    context: Context,
+    shouldFetch: Bool
+  ) async -> ServerOverviewEntry {
+    let servers = selectedServers(for: configuration)
+    var snapshots = WidgetStore.snapshots()
+
+    if shouldFetch {
+      await withTaskGroup(of: ServerSnapshot?.self) { group in
+        for server in servers {
+          group.addTask {
+            await ServerWidgetFetcher.fetch(server: server)
+          }
+        }
+
+        for await snapshot in group {
+          if let snapshot {
+            snapshots[String(snapshot.id)] = snapshot
+          }
+        }
+      }
+    }
+
+    let items = servers.map { server in
+      ServerOverviewItem(
+        server: server,
+        snapshot: snapshots[String(server.id)],
+        errorMessage: WidgetStore.selectedError(id: String(server.id))
+      )
+    }
+    .sorted { lhs, rhs in
+      if lhs.sortRank != rhs.sortRank {
+        return lhs.sortRank < rhs.sortRank
+      }
+      return lhs.server.sortIndex < rhs.server.sortIndex
+    }
+
+    return ServerOverviewEntry(
+      date: Date(),
+      items: items,
+      selectedCount: servers.count,
+      languageCode: configuration.language.resolvedCode
+    )
+  }
+
+  private func selectedServers(
+    for configuration: ServerOverviewSelectionIntent
+  ) -> [WidgetServer] {
+    let servers = WidgetStore.servers()
+    let ids = Set((configuration.servers ?? []).map(\.id))
+    guard !ids.isEmpty else { return servers }
+    return servers.filter { ids.contains(String($0.id)) }
+  }
+}
+
+struct ServerOverviewWidgetEntryView: View {
+  @Environment(\.widgetFamily) var family
+  let entry: ServerOverviewEntry
+
+  var strings: WidgetLocalizer {
+    WidgetLocalizer(code: entry.languageCode)
+  }
+
+  var body: some View {
+    Group {
+      if entry.items.isEmpty {
+        emptyOverviewCard
+      } else if family == .systemSmall {
+        smallOverviewCard
+      } else {
+        listOverviewCard(limit: family == .systemLarge ? 8 : 4)
+      }
+    }
+    .serverWidgetBackground()
+  }
+
+  private var smallOverviewCard: some View {
+    VStack(alignment: .leading, spacing: 10) {
+      overviewHeader(compact: true)
+
+      VStack(spacing: 7) {
+        summaryMetric(label: "CPU", value: maxCpu)
+        summaryMetric(label: strings.string("widget.metric.memory"), value: maxMemory)
+        summaryMetric(label: strings.string("widget.metric.disk"), value: maxDisk)
+      }
+
+      Divider()
+
+      HStack(spacing: 6) {
+        statusCount(.warning, count: warningCount)
+        statusCount(.failed, count: failedCount)
+      }
+      .lineLimit(1)
+      .minimumScaleFactor(0.75)
+    }
+    .padding(.horizontal, 12)
+    .padding(.vertical, 12)
+    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+  }
+
+  private func listOverviewCard(limit: Int) -> some View {
+    let visibleItems = Array(entry.items.prefix(limit))
+    let hiddenCount = max(entry.items.count - visibleItems.count, 0)
+
+    return VStack(alignment: .leading, spacing: family == .systemLarge ? 9 : 7) {
+      overviewHeader(compact: false)
+
+      if family == .systemLarge {
+        HStack(spacing: 8) {
+          summaryChip(label: "CPU", value: maxCpu)
+          summaryChip(label: strings.string("widget.metric.memory"), value: maxMemory)
+          summaryChip(label: strings.string("widget.metric.disk"), value: maxDisk)
+        }
+      }
+
+      VStack(spacing: family == .systemLarge ? 7 : 5) {
+        ForEach(visibleItems) { item in
+          overviewRow(item)
+        }
+      }
+
+      Spacer(minLength: 0)
+
+      footer(hiddenCount: hiddenCount)
+    }
+    .padding(.horizontal, 16)
+    .padding(.top, 15)
+    .padding(.bottom, 13)
+    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+  }
+
+  private var emptyOverviewCard: some View {
+    VStack(alignment: .leading, spacing: 10) {
+      Image(systemName: "server.rack")
+        .font(.title2.weight(.semibold))
+        .foregroundStyle(.secondary)
+      Text(strings.string("widget.empty.title"))
+        .font(.headline)
+      Text(strings.string("widget.empty.subtitle"))
+        .font(.footnote.weight(.medium))
+        .foregroundStyle(.secondary)
+      Spacer(minLength: 0)
+    }
+    .padding(16)
+  }
+
+  private func overviewHeader(compact: Bool) -> some View {
+    HStack(spacing: 8) {
+      Image(systemName: "server.rack")
+        .font(.system(size: compact ? 16 : 18, weight: .bold))
+        .foregroundStyle(.blue)
+
+      VStack(alignment: .leading, spacing: 1) {
+        Text(strings.string("widget.overview.title"))
+          .font(.system(size: compact ? 13 : 15, weight: .bold, design: .rounded))
+          .lineLimit(1)
+        Text(strings.format("widget.overview.online_count", onlineCount, entry.selectedCount))
+          .font(.caption2.weight(.semibold))
+          .foregroundStyle(.secondary)
+          .numericTextTransition()
+          .lineLimit(1)
+      }
+
+      Spacer(minLength: 0)
+    }
+  }
+
+  private func overviewRow(_ item: ServerOverviewItem) -> some View {
+    HStack(spacing: 8) {
+      Circle()
+        .fill(item.status.tint)
+        .frame(width: 7, height: 7)
+
+      VStack(alignment: .leading, spacing: 2) {
+        Text(item.snapshot?.title ?? item.server.title)
+          .font(.caption.weight(.bold))
+          .lineLimit(1)
+          .minimumScaleFactor(0.78)
+
+        Text(rowSubtitle(item))
+          .font(.system(size: 10, weight: .medium, design: .rounded))
+          .foregroundStyle(.secondary)
+          .lineLimit(1)
+          .minimumScaleFactor(0.74)
+      }
+      .frame(maxWidth: .infinity, alignment: .leading)
+
+      rowMetric(label: "CPU", value: item.snapshot?.cpuPercent)
+      rowMetric(label: strings.string("widget.metric.memory"), value: item.snapshot?.memoryPercent)
+
+      if family == .systemLarge {
+        rowMetric(label: strings.string("widget.metric.disk"), value: item.snapshot?.diskPercent)
+      }
+
+      Text(latencyText(item))
+        .font(.system(size: 10, weight: .bold, design: .rounded).monospacedDigit())
+        .foregroundStyle(item.status == .failed ? .red : .secondary)
+        .numericTextTransition()
+        .frame(width: family == .systemLarge ? 44 : 38, alignment: .trailing)
+        .lineLimit(1)
+        .minimumScaleFactor(0.72)
+    }
+    .frame(height: family == .systemLarge ? 24 : 22)
+  }
+
+  private func rowMetric(label: String, value: Double?) -> some View {
+    VStack(alignment: .trailing, spacing: 1) {
+      Text(label)
+        .font(.system(size: 8, weight: .bold, design: .rounded))
+        .foregroundStyle(.secondary)
+        .lineLimit(1)
+      Text(value.map(percent) ?? "--")
+        .font(.system(size: 10, weight: .bold, design: .rounded).monospacedDigit())
+        .foregroundStyle(value.map(usageColor) ?? .secondary)
+        .numericTextTransition()
+        .lineLimit(1)
+    }
+    .frame(width: family == .systemLarge ? 42 : 36, alignment: .trailing)
+  }
+
+  private func footer(hiddenCount: Int) -> some View {
+    HStack(spacing: 8) {
+      Text(
+        strings.format(
+          "widget.overview.summary",
+          warningCount,
+          failedCount
+        )
+      )
+      .font(.caption2.weight(.semibold))
+      .foregroundStyle(.secondary)
+      .lineLimit(1)
+
+      Spacer(minLength: 0)
+
+      if hiddenCount > 0 {
+        Text(strings.format("widget.overview.more", hiddenCount))
+          .font(.caption2.weight(.bold))
+          .foregroundStyle(.secondary)
+          .lineLimit(1)
+      }
+    }
+    .minimumScaleFactor(0.75)
+  }
+
+  private func summaryMetric(label: String, value: Double?) -> some View {
+    HStack(spacing: 6) {
+      Text(label)
+        .font(.system(size: 10, weight: .bold, design: .rounded))
+        .foregroundStyle(.secondary)
+        .frame(width: 30, alignment: .leading)
+
+      GeometryReader { proxy in
+        ZStack(alignment: .leading) {
+          Capsule().fill(.secondary.opacity(0.14))
+          Capsule()
+            .fill(value.map(usageColor) ?? .secondary)
+            .frame(width: proxy.size.width * min(max(value ?? 0, 0), 100) / 100)
+        }
+      }
+      .frame(height: 5)
+
+      Text(value.map(percent) ?? "--")
+        .font(.system(size: 10, weight: .bold, design: .rounded).monospacedDigit())
+        .numericTextTransition()
+        .frame(width: 34, alignment: .trailing)
+    }
+    .frame(height: 11)
+  }
+
+  private func summaryChip(label: String, value: Double?) -> some View {
+    HStack(spacing: 4) {
+      Text(label)
+        .font(.caption2.weight(.bold))
+        .foregroundStyle(.secondary)
+      Text(value.map(percent) ?? "--")
+        .font(.caption2.monospacedDigit().weight(.bold))
+        .foregroundStyle(value.map(usageColor) ?? .secondary)
+        .numericTextTransition()
+    }
+    .padding(.horizontal, 7)
+    .padding(.vertical, 4)
+    .background(.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 6))
+    .lineLimit(1)
+  }
+
+  private func statusCount(_ status: ServerOverviewStatus, count: Int) -> some View {
+    HStack(spacing: 4) {
+      Circle()
+        .fill(status.tint)
+        .frame(width: 6, height: 6)
+      Text(statusLabel(status, count: count))
+        .font(.caption2.weight(.bold))
+        .foregroundStyle(.secondary)
+        .numericTextTransition()
+    }
+  }
+
+  private func rowSubtitle(_ item: ServerOverviewItem) -> String {
+    if item.snapshot == nil {
+      return item.errorMessage ?? strings.string("widget.fallback.waiting")
+    }
+    let os = item.snapshot?.osName.isEmpty == false ? item.snapshot!.osName : item.server.host
+    let uptime = formatUptime(item.snapshot?.uptimeSeconds ?? 0)
+    return uptime.isEmpty ? os : "\(os) · \(uptime)"
+  }
+
+  private func latencyText(_ item: ServerOverviewItem) -> String {
+    if item.status == .failed { return strings.string("widget.status.unknown") }
+    guard let snapshot = item.snapshot else { return "--" }
+    return "\(snapshot.latencyMs)ms"
+  }
+
+  private func statusLabel(_ status: ServerOverviewStatus, count: Int) -> String {
+    switch status {
+    case .online:
+      return strings.format("widget.overview.online", count)
+    case .warning:
+      return strings.format("widget.overview.warning", count)
+    case .failed:
+      return strings.format("widget.overview.failed", count)
+    case .pending:
+      return strings.format("widget.overview.pending", count)
+    }
+  }
+
+  private var onlineCount: Int {
+    entry.items.filter { $0.status == .online }.count
+  }
+
+  private var warningCount: Int {
+    entry.items.filter { $0.status == .warning }.count
+  }
+
+  private var failedCount: Int {
+    entry.items.filter { $0.status == .failed }.count
+  }
+
+  private var maxCpu: Double? {
+    maxValue(entry.items.compactMap { $0.snapshot?.cpuPercent })
+  }
+
+  private var maxMemory: Double? {
+    maxValue(entry.items.compactMap { $0.snapshot?.memoryPercent })
+  }
+
+  private var maxDisk: Double? {
+    maxValue(entry.items.compactMap { $0.snapshot?.diskPercent })
+  }
+
+  private func maxValue(_ values: [Double]) -> Double? {
+    values.max()
+  }
+
+  private func usageColor(_ value: Double) -> Color {
+    if value >= 85 { return .red }
+    if value >= 60 { return .orange }
+    return .green
+  }
+
+  private func percent(_ value: Double) -> String {
+    let clamped = min(max(value, 0), 100)
+    return clamped >= 10
+      ? "\(Int(clamped.rounded()))%"
+      : String(format: "%.1f%%", clamped)
+  }
+
+  private func formatUptime(_ seconds: Int) -> String {
+    guard seconds > 0 else { return "" }
+    let days = seconds / 86_400
+    let hours = (seconds % 86_400) / 3_600
+    let minutes = (seconds % 3_600) / 60
+    if days > 0 { return strings.format("widget.uptime.days_hours", days, hours) }
+    if hours > 0 { return strings.format("widget.uptime.hours_minutes", hours, minutes) }
+    return strings.format("widget.uptime.minutes", minutes)
+  }
+}
+
+@available(iOSApplicationExtension 17.0, *)
 struct ServerStatusWidget: Widget {
   let kind = simpleWidgetKind
 
@@ -1399,6 +2041,7 @@ struct ServerStatusWidget: Widget {
   }
 }
 
+@available(iOSApplicationExtension 17.0, *)
 struct ServerStatusHorizontalMetricsWidget: Widget {
   let kind = horizontalMetricsWidgetKind
 
@@ -1417,11 +2060,71 @@ struct ServerStatusHorizontalMetricsWidget: Widget {
   }
 }
 
+@available(iOSApplicationExtension 17.0, *)
+struct ServerOverviewWidget: Widget {
+  let kind = overviewWidgetKind
+
+  var body: some WidgetConfiguration {
+    AppIntentConfiguration(
+      kind: kind,
+      intent: ServerOverviewSelectionIntent.self,
+      provider: ServerOverviewProvider()
+    ) { entry in
+      ServerOverviewWidgetEntryView(entry: entry)
+    }
+    .configurationDisplayName("widget.display.name.overview")
+    .description("widget.display.description.overview")
+    .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
+    .contentMarginsDisabled()
+  }
+}
+
+@available(iOSApplicationExtension, introduced: 16.0, obsoleted: 17.0)
+struct LegacyServerStatusWidget: Widget {
+  let kind = simpleWidgetKind
+
+  var body: some WidgetConfiguration {
+    IntentConfiguration(
+      kind: kind,
+      intent: SelectServerIntent.self,
+      provider: LegacyServerStatusProvider(cardStyle: .simple)
+    ) { entry in
+      ServerStatusWidgetEntryView(entry: entry)
+    }
+    .configurationDisplayName("widget.display.name.simple")
+    .description("widget.display.description.simple")
+    .supportedFamilies([.systemSmall, .systemMedium])
+  }
+}
+
+@available(iOSApplicationExtension, introduced: 16.0, obsoleted: 17.0)
+struct LegacyServerStatusHorizontalMetricsWidget: Widget {
+  let kind = horizontalMetricsWidgetKind
+
+  var body: some WidgetConfiguration {
+    IntentConfiguration(
+      kind: kind,
+      intent: SelectServerIntent.self,
+      provider: LegacyServerStatusProvider(cardStyle: .horizontalMetrics)
+    ) { entry in
+      ServerStatusWidgetEntryView(entry: entry)
+    }
+    .configurationDisplayName("widget.display.name.horizontal_metrics")
+    .description("widget.display.description.horizontal_metrics")
+    .supportedFamilies([.systemSmall, .systemMedium])
+  }
+}
+
 @main
 struct ServerStatusWidgetBundle: WidgetBundle {
   var body: some Widget {
-    ServerStatusWidget()
-    ServerStatusHorizontalMetricsWidget()
+    if #available(iOSApplicationExtension 17.0, *) {
+      ServerStatusWidget()
+      ServerStatusHorizontalMetricsWidget()
+      ServerOverviewWidget()
+    }
+    LegacyServerStatusWidget()
+    LegacyServerStatusHorizontalMetricsWidget()
     if #available(iOSApplicationExtension 16.1, *) {
       FileTransferActivityWidget()
     }
