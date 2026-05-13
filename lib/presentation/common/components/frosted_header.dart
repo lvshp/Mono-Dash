@@ -371,38 +371,52 @@ class _SwipeProgressPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     if (progress <= 0) return;
 
-    // 构建圆角矩形路径（从顶部中心开始，顺时针转一圈）
-    final rect = Offset.zero & size;
+    // 稍微内缩，避免发光线条被 ClipRRect 裁掉。
+    final rect = (Offset.zero & size).deflate(strokeWidth / 2 + 0.5);
     final rrect = RRect.fromRectAndRadius(rect, Radius.circular(borderRadius));
-    final path = Path()..addRRect(rrect);
 
-    // 使用 PathMetrics 获取路径总长度
-    final metrics = path.computeMetrics().first;
-    final totalLength = metrics.length;
-    final drawLength = totalLength * progress.clamp(0.0, 1.0);
-
-    // 提取子路径
-    final extractPath = metrics.extractPath(0, drawLength);
-
-    // 绘制进度弧线
-    final paint = Paint()
-      ..color = color.withValues(alpha: 0.85)
+    // 单一连续渐变光带。之前用多段 stroke + blur 叠加，会在端点和圆角处
+    // 形成脏点；这里改为 shader 控制颜色分布，避免分段痕迹。
+    final sweep = progress.clamp(0.0, 1.0);
+    final gradient = SweepGradient(
+      transform: GradientRotation((sweep * 2 * 3.141592653589793) - 1.5708),
+      colors: [
+        const Color(0x00000000),
+        color.withValues(alpha: 0.00),
+        color.withValues(alpha: 0.10),
+        color.withValues(alpha: 0.36),
+        color.withValues(alpha: 0.86),
+        color.withValues(alpha: 0.28),
+        const Color(0x00000000),
+      ],
+      stops: const [0.00, 0.56, 0.70, 0.82, 0.90, 0.96, 1.00],
+    );
+    final glowGradient = SweepGradient(
+      transform: GradientRotation((sweep * 2 * 3.141592653589793) - 1.5708),
+      colors: [
+        const Color(0x00000000),
+        color.withValues(alpha: 0.00),
+        color.withValues(alpha: 0.08),
+        color.withValues(alpha: 0.22),
+        color.withValues(alpha: 0.12),
+        const Color(0x00000000),
+      ],
+      stops: const [0.00, 0.60, 0.76, 0.88, 0.96, 1.00],
+    );
+    final glowPaint = Paint()
+      ..shader = glowGradient.createShader(rect)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth * 2.6
+      ..strokeCap = StrokeCap.butt
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.0);
+    final corePaint = Paint()
+      ..shader = gradient.createShader(rect)
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
+      ..strokeCap = StrokeCap.butt;
 
-    canvas.drawPath(extractPath, paint);
-
-    // 在弧线头部绘制一个发光点，增加视觉感
-    if (progress > 0.02 && progress < 0.98) {
-      final tangent = metrics.getTangentForOffset(drawLength);
-      if (tangent != null) {
-        final glowPaint = Paint()
-          ..color = color.withValues(alpha: 0.4)
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4.0);
-        canvas.drawCircle(tangent.position, 3.0, glowPaint);
-      }
-    }
+    canvas.drawRRect(rrect, glowPaint);
+    canvas.drawRRect(rrect, corePaint);
   }
 
   @override
