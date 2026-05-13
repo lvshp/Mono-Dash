@@ -8,6 +8,7 @@ import '../../../../core/localization/generated/app_localizations.dart';
 import '../../../../core/localization/l10n_x.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../common/app_toast.dart';
+import '../../../common/components/frosted_scaffold.dart';
 import '../../../common/components/sub_menu_page.dart';
 import '../providers/app_lock_provider.dart';
 import '../widgets/app_passcode_pad.dart';
@@ -30,17 +31,20 @@ class _AppLockSettingsPageState extends ConsumerState<AppLockSettingsPage> {
     final l10n = context.l10n;
     final settingsAsync = ref.watch(appLockControllerProvider);
 
-    return CupertinoPageScaffold(
-      backgroundColor: AppColors.background(context),
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(l10n.settings_appLock_pageTitle),
-        backgroundColor: AppColors.background(context),
-        border: null,
-      ),
-      child: SafeArea(
-        child: settingsAsync.when(
-          loading: () => const Center(child: CupertinoActivityIndicator()),
-          error: (error, _) => Center(
+    return FrostedScaffold(
+      title: l10n.settings_appLock_pageTitle,
+      body: settingsAsync.when(
+        loading: () => Padding(
+          padding: EdgeInsets.only(
+            top: FrostedScaffold.contentTopPadding(context),
+          ),
+          child: const Center(child: CupertinoActivityIndicator()),
+        ),
+        error: (error, _) => Padding(
+          padding: EdgeInsets.only(
+            top: FrostedScaffold.contentTopPadding(context),
+          ),
+          child: Center(
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Text(
@@ -50,26 +54,31 @@ class _AppLockSettingsPageState extends ConsumerState<AppLockSettingsPage> {
               ),
             ),
           ),
-          data: (settings) => ListView(
-            physics: const AlwaysScrollableScrollPhysics(
-              parent: BouncingScrollPhysics(),
-            ),
-            padding: const EdgeInsets.fromLTRB(16, 18, 16, 132),
-            children: [
-              _buildSecurityCard(settings),
-              const SizedBox(height: 12),
-              _buildMischiefCard(settings),
-              const SizedBox(height: 14),
-              Text(
-                l10n.settings_appLock_widgetNote,
-                style: TextStyle(
-                  fontSize: 13,
-                  height: 1.35,
-                  color: AppColors.secondaryLabel(context),
-                ),
-              ),
-            ],
+        ),
+        data: (settings) => ListView(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
           ),
+          padding: EdgeInsets.fromLTRB(
+            16,
+            FrostedScaffold.contentTopPadding(context) + 18,
+            16,
+            132,
+          ),
+          children: [
+            _buildSecurityCard(settings),
+            const SizedBox(height: 12),
+            _buildMischiefCard(settings),
+            const SizedBox(height: 14),
+            Text(
+              l10n.settings_appLock_widgetNote,
+              style: TextStyle(
+                fontSize: 13,
+                height: 1.35,
+                color: AppColors.secondaryLabel(context),
+              ),
+            ),
+          ],
         ),
       ),
     );
