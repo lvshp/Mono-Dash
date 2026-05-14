@@ -258,6 +258,19 @@ class _AppTerminalScreenState extends ConsumerState<_AppTerminalScreen> {
     _terminal.keyInput(key, ctrl: ctrl, alt: alt, shift: shift);
   }
 
+  KeyEventResult _handleTerminalKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+      return KeyEventResult.ignored;
+    }
+    final logicalKey = event.logicalKey;
+    if (logicalKey == LogicalKeyboardKey.enter ||
+        logicalKey == LogicalKeyboardKey.numpadEnter) {
+      _terminal.keyInput(TerminalKey.enter);
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = CupertinoTheme.brightnessOf(context) == Brightness.dark;
@@ -331,6 +344,7 @@ class _AppTerminalScreenState extends ConsumerState<_AppTerminalScreen> {
                           fontFamily: 'Menlo',
                         ),
                         deleteDetection: true,
+                        onKeyEvent: _handleTerminalKeyEvent,
                         theme: isDark
                             ? TerminalThemes.defaultTheme
                             : brightTheme,
@@ -429,6 +443,11 @@ class _TerminalShortcutToolbar extends StatelessWidget {
               label: 'Tab',
               enabled: enabled,
               onPressed: () => onKey(TerminalKey.tab),
+            ),
+            _TerminalShortcutButton.text(
+              label: 'Enter',
+              enabled: enabled,
+              onPressed: () => onKey(TerminalKey.enter),
             ),
             _TerminalShortcutButton.text(
               label: 'Ctrl+C',

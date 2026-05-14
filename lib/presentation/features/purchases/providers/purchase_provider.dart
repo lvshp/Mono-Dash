@@ -23,7 +23,11 @@ class RevenueCatConfig {
   static const entitlementId = 'Mono Dash Unlimited';
   static const offeringId = 'default';
   static const freeServerLimit = 1;
-  static const bypassServerLimitCheck = false;
+  static const localUnlimitedEnabled = bool.fromEnvironment(
+    'MONO_DASH_UNLIMITED',
+    defaultValue: false,
+  );
+  static const bypassServerLimitCheck = localUnlimitedEnabled;
 
   static String? get apiKey {
     if (kIsWeb) return webApiKey.isEmpty ? null : webApiKey;
@@ -153,7 +157,9 @@ class PurchaseController extends AsyncNotifier<PurchaseState> {
 
   Future<PurchaseState> _loadLocalState() async {
     final storage = ref.read(storageServiceProvider);
-    final localUnlocked = await _readLocallyUnlocked(storage);
+    final localUnlocked =
+        RevenueCatConfig.localUnlimitedEnabled ||
+        await _readLocallyUnlocked(storage);
     final lastVerifiedAt = await _readLastVerifiedAt(storage);
     return PurchaseState(
       isConfigured: _configured,
@@ -204,6 +210,15 @@ class PurchaseController extends AsyncNotifier<PurchaseState> {
     required bool force,
   }) async {
     final current = state.valueOrNull ?? await _loadLocalState();
+    if (RevenueCatConfig.localUnlimitedEnabled) {
+      final next = current.copyWith(
+        isUnlocked: true,
+        verificationStatus: PurchaseVerificationStatus.localOnly,
+        clearMessage: true,
+      );
+      state = AsyncValue.data(next);
+      return next;
+    }
     if (!force && !current.isUnlocked) return current;
 
     final l10n = ref.read(appLocalizationsProvider);
@@ -271,6 +286,15 @@ class PurchaseController extends AsyncNotifier<PurchaseState> {
   Future<PurchaseState> _loadOfferingsInternal() async {
     _lastOfferingsAttemptAt = DateTime.now().toUtc();
     final current = state.valueOrNull ?? await _loadLocalState();
+    if (RevenueCatConfig.localUnlimitedEnabled) {
+      final next = current.copyWith(
+        isUnlocked: true,
+        verificationStatus: PurchaseVerificationStatus.localOnly,
+        clearMessage: true,
+      );
+      state = AsyncValue.data(next);
+      return next;
+    }
     final l10n = ref.read(appLocalizationsProvider);
     final apiKey = RevenueCatConfig.apiKey;
     if (apiKey == null) {
