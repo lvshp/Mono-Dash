@@ -471,6 +471,18 @@
   "@terminal_pasteToTerminal": {
     "description": "Terminal menu item to paste clipboard text."
   },
+  "terminal_float": "Float",
+  "@terminal_float": {
+    "description": "Terminal menu item to minimize terminal into a floating bubble."
+  },
+  "terminal_floatRestore": "Restore Terminal",
+  "@terminal_floatRestore": {
+    "description": "Floating bubble menu item to restore the terminal screen."
+  },
+  "terminal_floatClose": "Close Terminal",
+  "@terminal_floatClose": {
+    "description": "Floating bubble menu item to close the floating terminal."
+  },
   "nav_servers": "Servers",
   "@nav_servers": {
     "description": "Bottom tab label for servers."
@@ -2791,6 +2803,38 @@
   "@servers_edit": {
     "description": "Server context menu edit action."
   },
+  "servers_memo": "Memo",
+  "@servers_memo": {
+    "description": "Server memo label."
+  },
+  "servers_editMemo": "Edit Memo",
+  "@servers_editMemo": {
+    "description": "Action label for opening the server memo editor."
+  },
+  "servers_noMemo": "No memo yet",
+  "@servers_noMemo": {
+    "description": "Placeholder shown when the server memo is empty."
+  },
+  "servers_loadingMemo": "Loading memo...",
+  "@servers_loadingMemo": {
+    "description": "Placeholder shown while loading the server memo."
+  },
+  "servers_memoUnavailable": "Memo unavailable",
+  "@servers_memoUnavailable": {
+    "description": "Placeholder shown when the server memo cannot be loaded."
+  },
+  "servers_memoPlaceholder": "Write a memo...",
+  "@servers_memoPlaceholder": {
+    "description": "Text field placeholder for editing the server memo."
+  },
+  "servers_memoLoadFailed": "Failed to load memo",
+  "@servers_memoLoadFailed": {
+    "description": "Server memo load failure state title."
+  },
+  "servers_retry": "Retry",
+  "@servers_retry": {
+    "description": "Retry action label."
+  },
   "premium_heroSubtitle": "One purchase, lifetime access to all features",
   "@premium_heroSubtitle": {
     "description": "Premium purchase hero subtitle."
@@ -3363,6 +3407,56 @@
         "type": "int"
       }
     }
+  },
+  "settings_serversAutoRefreshTitle": "Auto Refresh Servers",
+  "@settings_serversAutoRefreshTitle": {
+    "description": "Settings row title for enabling automatic refresh on the servers page."
+  },
+  "settings_serversAutoRefreshSubtitleOn": "Refresh every {seconds} s",
+  "@settings_serversAutoRefreshSubtitleOn": {
+    "description": "Subtitle shown when servers page auto refresh is enabled.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "settings_serversAutoRefreshSubtitleOff": "Server status updates only when opened or refreshed manually",
+  "@settings_serversAutoRefreshSubtitleOff": {
+    "description": "Subtitle shown when servers page auto refresh is disabled."
+  },
+  "settings_serversRefreshIntervalTitle": "Refresh Interval",
+  "@settings_serversRefreshIntervalTitle": {
+    "description": "Settings row title for editing the servers page refresh interval."
+  },
+  "settings_serversRefreshIntervalSubtitle": "{seconds} s",
+  "@settings_serversRefreshIntervalSubtitle": {
+    "description": "Subtitle showing the servers page refresh interval in seconds.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "settings_serversRefreshIntervalPlaceholder": "For example: 5",
+  "@settings_serversRefreshIntervalPlaceholder": {
+    "description": "Placeholder for the servers page refresh interval field."
+  },
+  "settings_serversRefreshIntervalDescription": "Used for automatic refresh on the servers page. Range: 1-300 seconds.",
+  "@settings_serversRefreshIntervalDescription": {
+    "description": "Description for the servers page refresh interval editor."
+  },
+  "settings_serversRefreshIntervalErrorEmpty": "Enter a refresh interval",
+  "@settings_serversRefreshIntervalErrorEmpty": {
+    "description": "Validation message when the refresh interval is empty."
+  },
+  "settings_serversRefreshIntervalErrorRange": "Enter a value from 1 to 300 seconds",
+  "@settings_serversRefreshIntervalErrorRange": {
+    "description": "Validation message when the refresh interval is out of range."
+  },
+  "settings_serversRefreshIntervalUpdated": "Refresh interval updated",
+  "@settings_serversRefreshIntervalUpdated": {
+    "description": "Toast shown after the servers page refresh interval is updated."
   },
   "ssh_title": "SSH Management",
   "@ssh_title": {

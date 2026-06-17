@@ -335,6 +335,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get terminal_pasteToTerminal => 'Paste to Terminal';
 
   @override
+  String get terminal_float => 'Float';
+
+  @override
+  String get terminal_floatRestore => 'Restore Terminal';
+
+  @override
+  String get terminal_floatClose => 'Close Terminal';
+
+  @override
   String get nav_servers => 'Servers';
 
   @override
@@ -2029,6 +2038,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get servers_edit => 'Edit';
 
   @override
+  String get servers_memo => 'Memo';
+
+  @override
+  String get servers_editMemo => 'Edit Memo';
+
+  @override
+  String get servers_noMemo => 'No memo yet';
+
+  @override
+  String get servers_loadingMemo => 'Loading memo...';
+
+  @override
+  String get servers_memoUnavailable => 'Memo unavailable';
+
+  @override
+  String get servers_memoPlaceholder => 'Write a memo...';
+
+  @override
+  String get servers_memoLoadFailed => 'Failed to load memo';
+
+  @override
+  String get servers_retry => 'Retry';
+
+  @override
   String get premium_heroSubtitle =>
       'One purchase, lifetime access to all features';
 
@@ -2456,6 +2489,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String settings_network_customHeadersCount(int count) {
     return '$count set';
   }
+
+  @override
+  String get settings_serversAutoRefreshTitle => 'Auto Refresh Servers';
+
+  @override
+  String settings_serversAutoRefreshSubtitleOn(int seconds) {
+    return 'Refresh every $seconds s';
+  }
+
+  @override
+  String get settings_serversAutoRefreshSubtitleOff =>
+      'Server status updates only when opened or refreshed manually';
+
+  @override
+  String get settings_serversRefreshIntervalTitle => 'Refresh Interval';
+
+  @override
+  String settings_serversRefreshIntervalSubtitle(int seconds) {
+    return '$seconds s';
+  }
+
+  @override
+  String get settings_serversRefreshIntervalPlaceholder => 'For example: 5';
+
+  @override
+  String get settings_serversRefreshIntervalDescription =>
+      'Used for automatic refresh on the servers page. Range: 1-300 seconds.';
+
+  @override
+  String get settings_serversRefreshIntervalErrorEmpty =>
+      'Enter a refresh interval';
+
+  @override
+  String get settings_serversRefreshIntervalErrorRange =>
+      'Enter a value from 1 to 300 seconds';
+
+  @override
+  String get settings_serversRefreshIntervalUpdated =>
+      'Refresh interval updated';
 
   @override
   String get ssh_title => 'SSH Management';

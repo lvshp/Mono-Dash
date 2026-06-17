@@ -95,6 +95,9 @@
   "terminal_connecting": "连接中",
   "terminal_copySelection": "复制选中",
   "terminal_pasteToTerminal": "粘贴到终端",
+  "terminal_float": "悬浮",
+  "terminal_floatRestore": "恢复终端",
+  "terminal_floatClose": "关闭终端",
   "nav_servers": "服务器",
   "nav_settings": "设置",
   "nav_overview": "概览",
@@ -610,6 +613,14 @@
   "servers_tasks": "任务",
   "servers_sort": "排序",
   "servers_edit": "编辑",
+  "servers_memo": "备注",
+  "servers_editMemo": "编辑备注",
+  "servers_noMemo": "暂无备注",
+  "servers_loadingMemo": "正在加载备注...",
+  "servers_memoUnavailable": "备注不可用",
+  "servers_memoPlaceholder": "写点备注...",
+  "servers_memoLoadFailed": "备注加载失败",
+  "servers_retry": "重试",
   "premium_heroSubtitle": "一次购买，永久解锁全部功能",
   "premium_unlimitedTitle": "无限面板管理",
   "premium_unlimitedDescription": "不再受 1 个面板的限制，添加任意数量的 1Panel 实例。",
@@ -751,6 +762,30 @@
   "settings_network_customHeadersTitle": "自定义 Header",
   "settings_network_customHeadersEmpty": "未设置",
   "settings_network_customHeadersCount": "已设置 {count} 项",
+  "settings_serversAutoRefreshTitle": "自动刷新服务器",
+  "settings_serversAutoRefreshSubtitleOn": "每 {seconds} 秒刷新一次",
+  "@settings_serversAutoRefreshSubtitleOn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "settings_serversAutoRefreshSubtitleOff": "仅在打开或手动刷新时更新服务器状态",
+  "settings_serversRefreshIntervalTitle": "刷新频率",
+  "settings_serversRefreshIntervalSubtitle": "{seconds} 秒",
+  "@settings_serversRefreshIntervalSubtitle": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "settings_serversRefreshIntervalPlaceholder": "例如：5",
+  "settings_serversRefreshIntervalDescription": "用于服务器页面自动刷新，范围 1-300 秒。",
+  "settings_serversRefreshIntervalErrorEmpty": "请输入刷新频率",
+  "settings_serversRefreshIntervalErrorRange": "请输入 1-300 秒之间的数值",
+  "settings_serversRefreshIntervalUpdated": "刷新频率已更新",
   "ssh_title": "SSH 管理",
   "ssh_manage": "管理",
   "ssh_refreshConfig": "刷新配置",

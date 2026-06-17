@@ -668,6 +668,24 @@ abstract class AppLocalizations {
   /// **'Paste to Terminal'**
   String get terminal_pasteToTerminal;
 
+  /// Terminal menu item to minimize terminal into a floating bubble.
+  ///
+  /// In en, this message translates to:
+  /// **'Float'**
+  String get terminal_float;
+
+  /// Floating bubble menu item to restore the terminal screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore Terminal'**
+  String get terminal_floatRestore;
+
+  /// Floating bubble menu item to close the floating terminal.
+  ///
+  /// In en, this message translates to:
+  /// **'Close Terminal'**
+  String get terminal_floatClose;
+
   /// Bottom tab label for servers.
   ///
   /// In en, this message translates to:
@@ -3758,6 +3776,54 @@ abstract class AppLocalizations {
   /// **'Edit'**
   String get servers_edit;
 
+  /// Server memo label.
+  ///
+  /// In en, this message translates to:
+  /// **'Memo'**
+  String get servers_memo;
+
+  /// Action label for opening the server memo editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Memo'**
+  String get servers_editMemo;
+
+  /// Placeholder shown when the server memo is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No memo yet'**
+  String get servers_noMemo;
+
+  /// Placeholder shown while loading the server memo.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading memo...'**
+  String get servers_loadingMemo;
+
+  /// Placeholder shown when the server memo cannot be loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Memo unavailable'**
+  String get servers_memoUnavailable;
+
+  /// Text field placeholder for editing the server memo.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a memo...'**
+  String get servers_memoPlaceholder;
+
+  /// Server memo load failure state title.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load memo'**
+  String get servers_memoLoadFailed;
+
+  /// Retry action label.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get servers_retry;
+
   /// Premium purchase hero subtitle.
   ///
   /// In en, this message translates to:
@@ -4519,6 +4585,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} set'**
   String settings_network_customHeadersCount(int count);
+
+  /// Settings row title for enabling automatic refresh on the servers page.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto Refresh Servers'**
+  String get settings_serversAutoRefreshTitle;
+
+  /// Subtitle shown when servers page auto refresh is enabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh every {seconds} s'**
+  String settings_serversAutoRefreshSubtitleOn(int seconds);
+
+  /// Subtitle shown when servers page auto refresh is disabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Server status updates only when opened or refreshed manually'**
+  String get settings_serversAutoRefreshSubtitleOff;
+
+  /// Settings row title for editing the servers page refresh interval.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh Interval'**
+  String get settings_serversRefreshIntervalTitle;
+
+  /// Subtitle showing the servers page refresh interval in seconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds} s'**
+  String settings_serversRefreshIntervalSubtitle(int seconds);
+
+  /// Placeholder for the servers page refresh interval field.
+  ///
+  /// In en, this message translates to:
+  /// **'For example: 5'**
+  String get settings_serversRefreshIntervalPlaceholder;
+
+  /// Description for the servers page refresh interval editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Used for automatic refresh on the servers page. Range: 1-300 seconds.'**
+  String get settings_serversRefreshIntervalDescription;
+
+  /// Validation message when the refresh interval is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a refresh interval'**
+  String get settings_serversRefreshIntervalErrorEmpty;
+
+  /// Validation message when the refresh interval is out of range.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a value from 1 to 300 seconds'**
+  String get settings_serversRefreshIntervalErrorRange;
+
+  /// Toast shown after the servers page refresh interval is updated.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh interval updated'**
+  String get settings_serversRefreshIntervalUpdated;
 
   /// SSH management page title.
   ///

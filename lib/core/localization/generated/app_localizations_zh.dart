@@ -331,6 +331,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get terminal_pasteToTerminal => '粘贴到终端';
 
   @override
+  String get terminal_float => '悬浮';
+
+  @override
+  String get terminal_floatRestore => '恢复终端';
+
+  @override
+  String get terminal_floatClose => '关闭终端';
+
+  @override
   String get nav_servers => '服务器';
 
   @override
@@ -1974,6 +1983,30 @@ class AppLocalizationsZh extends AppLocalizations {
   String get servers_edit => '编辑';
 
   @override
+  String get servers_memo => '备注';
+
+  @override
+  String get servers_editMemo => '编辑备注';
+
+  @override
+  String get servers_noMemo => '暂无备注';
+
+  @override
+  String get servers_loadingMemo => '正在加载备注...';
+
+  @override
+  String get servers_memoUnavailable => '备注不可用';
+
+  @override
+  String get servers_memoPlaceholder => '写点备注...';
+
+  @override
+  String get servers_memoLoadFailed => '备注加载失败';
+
+  @override
+  String get servers_retry => '重试';
+
+  @override
   String get premium_heroSubtitle => '一次购买，永久解锁全部功能';
 
   @override
@@ -2384,6 +2417,41 @@ class AppLocalizationsZh extends AppLocalizations {
   String settings_network_customHeadersCount(int count) {
     return '已设置 $count 项';
   }
+
+  @override
+  String get settings_serversAutoRefreshTitle => '自动刷新服务器';
+
+  @override
+  String settings_serversAutoRefreshSubtitleOn(int seconds) {
+    return '每 $seconds 秒刷新一次';
+  }
+
+  @override
+  String get settings_serversAutoRefreshSubtitleOff => '仅在打开或手动刷新时更新服务器状态';
+
+  @override
+  String get settings_serversRefreshIntervalTitle => '刷新频率';
+
+  @override
+  String settings_serversRefreshIntervalSubtitle(int seconds) {
+    return '$seconds 秒';
+  }
+
+  @override
+  String get settings_serversRefreshIntervalPlaceholder => '例如：5';
+
+  @override
+  String get settings_serversRefreshIntervalDescription =>
+      '用于服务器页面自动刷新，范围 1-300 秒。';
+
+  @override
+  String get settings_serversRefreshIntervalErrorEmpty => '请输入刷新频率';
+
+  @override
+  String get settings_serversRefreshIntervalErrorRange => '请输入 1-300 秒之间的数值';
+
+  @override
+  String get settings_serversRefreshIntervalUpdated => '刷新频率已更新';
 
   @override
   String get ssh_title => 'SSH 管理';

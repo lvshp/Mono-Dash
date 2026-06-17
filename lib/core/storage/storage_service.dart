@@ -50,6 +50,7 @@ class StorageService {
   StreamSubscription<String>? _iCloudChangesSubscription;
   Future<void>? _cloudSyncInFlight;
   Future<void>? _webDavSyncInFlight;
+  Future<void>? _serverSyncQueue;
   static const _legacyAllowInsecureConnectionsKey =
       'allow_insecure_connections';
   static const _serversFileName = 'servers.json';
@@ -59,6 +60,7 @@ class StorageService {
   static const _serverSyncLastErrorKey = 'server_sync_last_error';
   static const _serverSyncPayloadKey = 'mono_dash_server_sync_payload_v1';
   static const _serverSyncTombstonesKey = 'server_sync_tombstones_v1';
+  static const _serverMemoPrefix = 'server_memo_v1_';
   static const _webDavSyncEnabledKey = 'webdav_sync_enabled';
   static const _webDavSyncUrlKey = 'webdav_sync_url';
   static const _webDavSyncUsernameKey = 'webdav_sync_username';
@@ -202,8 +204,21 @@ class StorageService {
     if (removedServer != null) {
       await _deleteApiKeyForServer(removedServer);
     } else {
-      await deleteApiKey(id);
+      await deleteApiKey(id, syncWebDav: false);
     }
+    await deleteServerMemo(id);
+  }
+
+  Future<String> getServerMemo(int serverId) async {
+    return _prefs.getString('$_serverMemoPrefix$serverId') ?? '';
+  }
+
+  Future<void> saveServerMemo(int serverId, String content) async {
+    await _prefs.setString('$_serverMemoPrefix$serverId', content);
+  }
+
+  Future<void> deleteServerMemo(int serverId) async {
+    await _prefs.remove('$_serverMemoPrefix$serverId');
   }
 
   bool get isServerSyncEnabled =>
@@ -264,6 +279,7 @@ class StorageService {
     required String password,
     required bool syncApiKeys,
   }) async {
+    final previousConfig = await getWebDavSyncConfig();
     await _prefs.setString(_webDavSyncUrlKey, url.trim());
     await _prefs.setString(_webDavSyncUsernameKey, username.trim());
     await _prefs.setBool(_webDavSyncApiKeysKey, syncApiKeys);
@@ -273,6 +289,24 @@ class StorageService {
       await _secureStorage.write(key: _webDavSyncPasswordKey, value: password);
     }
     _syncStatusController.add(null);
+
+    if (previousConfig.enabled &&
+        previousConfig.isConfigured &&
+        previousConfig.syncApiKeys &&
+        !syncApiKeys) {
+      final sanitizedConfig = WebDavSyncConfig(
+        enabled: previousConfig.enabled,
+        url: previousConfig.url,
+        username: previousConfig.username,
+        password: previousConfig.password,
+        syncApiKeys: false,
+      );
+      await _runServerSyncExclusive(
+        () => _pushWebDavServerSyncSnapshot(sanitizedConfig),
+      );
+    } else if (syncApiKeys) {
+      await _pushWebDavApiKeySnapshotIfNeeded();
+    }
   }
 
   Future<void> setWebDavSyncEnabled(bool enabled) async {
@@ -289,11 +323,13 @@ class StorageService {
     if (inFlight != null) return inFlight;
 
     late final Future<void> syncFuture;
-    syncFuture = _syncServersFromCloud().whenComplete(() {
-      if (identical(_cloudSyncInFlight, syncFuture)) {
-        _cloudSyncInFlight = null;
-      }
-    });
+    syncFuture = _runServerSyncExclusive(_syncServersFromCloud).whenComplete(
+      () {
+        if (identical(_cloudSyncInFlight, syncFuture)) {
+          _cloudSyncInFlight = null;
+        }
+      },
+    );
     _cloudSyncInFlight = syncFuture;
     return _cloudSyncInFlight!;
   }
@@ -304,13 +340,39 @@ class StorageService {
     if (inFlight != null) return inFlight;
 
     late final Future<void> syncFuture;
-    syncFuture = _syncServersFromWebDav().whenComplete(() {
-      if (identical(_webDavSyncInFlight, syncFuture)) {
-        _webDavSyncInFlight = null;
-      }
-    });
+    syncFuture = _runServerSyncExclusive(_syncServersFromWebDav).whenComplete(
+      () {
+        if (identical(_webDavSyncInFlight, syncFuture)) {
+          _webDavSyncInFlight = null;
+        }
+      },
+    );
     _webDavSyncInFlight = syncFuture;
     return _webDavSyncInFlight!;
+  }
+
+  Future<void> _runServerSyncExclusive(Future<void> Function() operation) {
+    final previous = _serverSyncQueue;
+    late final Future<void> queued;
+    queued = () async {
+      if (previous != null) {
+        try {
+          await previous;
+        } catch (_) {
+          // A failed sync should not block later sync attempts.
+        }
+      }
+      await operation();
+    }();
+
+    late final Future<void> tracked;
+    tracked = queued.whenComplete(() {
+      if (identical(_serverSyncQueue, tracked)) {
+        _serverSyncQueue = null;
+      }
+    });
+    _serverSyncQueue = tracked;
+    return tracked;
   }
 
   Future<void> _syncServersFromCloud() async {
@@ -356,7 +418,7 @@ class StorageService {
         if (removedServer != null) {
           await _deleteApiKeyForServer(removedServer);
         } else {
-          await deleteApiKey(id);
+          await deleteApiKey(id, syncWebDav: false);
         }
       }
     }
@@ -422,7 +484,7 @@ class StorageService {
           if (removedServer != null) {
             await _deleteApiKeyForServer(removedServer);
           } else {
-            await deleteApiKey(id);
+            await deleteApiKey(id, syncWebDav: false);
           }
         }
       }
@@ -500,17 +562,19 @@ class StorageService {
 
   Future<void> saveApiKey(int id, String apiKey) async {
     await _secureStorage.write(key: _apiKeyKey(id), value: apiKey);
-    if (!isServerSyncEnabled) return;
     final server = await getServer(id);
     if (server == null) return;
 
     _ensureServerSyncMetadata(server);
-    await _trySecureOperation(
-      () => _syncSecureStorage.write(
-        key: _syncApiKeyKey(server.syncId),
-        value: apiKey,
-      ),
-    );
+    if (isServerSyncEnabled) {
+      await _trySecureOperation(
+        () => _syncSecureStorage.write(
+          key: _syncApiKeyKey(server.syncId),
+          value: apiKey,
+        ),
+      );
+    }
+    await _pushWebDavApiKeySnapshotIfNeeded();
   }
 
   Future<String?> getApiKey(int id) async {
@@ -540,13 +604,19 @@ class StorageService {
     return legacyApiKey;
   }
 
-  Future<void> deleteApiKey(int id) async {
+  Future<void> deleteApiKey(int id, {bool syncWebDav = true}) async {
     final server = await getServer(id);
     if (server != null) {
       await _deleteApiKeyForServer(server);
+      if (syncWebDav) {
+        await _pushWebDavApiKeySnapshotIfNeeded();
+      }
       return;
     }
     await _secureStorage.delete(key: _apiKeyKey(id));
+    if (syncWebDav) {
+      await _pushWebDavApiKeySnapshotIfNeeded();
+    }
   }
 
   Future<void> _deleteApiKeyForServer(Server server) async {
@@ -660,21 +730,42 @@ class StorageService {
     }
     if (isWebDavSyncEnabled) {
       final config = await getWebDavSyncConfig();
-      if (config.isConfigured) {
-        final client = WebDavSyncClient(
-          url: config.url,
-          username: config.username,
-          password: config.password,
-        );
-        final webDavPayload = config.syncApiKeys
-            ? await _buildServerSyncPayload(includeApiKeys: true)
-            : payload;
-        try {
-          await client.writePayload(webDavPayload.canonicalJson);
-        } catch (error) {
-          await _markWebDavSyncFailure(_webDavSyncErrorCode(error));
-        }
+      await _pushWebDavServerSyncSnapshot(config, defaultPayload: payload);
+    }
+  }
+
+  Future<void> _pushWebDavApiKeySnapshotIfNeeded() async {
+    if (!isWebDavSyncEnabled) return;
+
+    await _runServerSyncExclusive(() async {
+      final config = await getWebDavSyncConfig();
+      if (!config.isConfigured || !config.syncApiKeys) return;
+      await _pushWebDavServerSyncSnapshot(config, markSuccess: true);
+    });
+  }
+
+  Future<void> _pushWebDavServerSyncSnapshot(
+    WebDavSyncConfig config, {
+    _ServerSyncPayload? defaultPayload,
+    bool markSuccess = false,
+  }) async {
+    if (!config.isConfigured) return;
+
+    final client = WebDavSyncClient(
+      url: config.url,
+      username: config.username,
+      password: config.password,
+    );
+    final webDavPayload = config.syncApiKeys
+        ? await _buildServerSyncPayload(includeApiKeys: true)
+        : defaultPayload ?? await _buildServerSyncPayload();
+    try {
+      await client.writePayload(webDavPayload.canonicalJson);
+      if (markSuccess) {
+        await _markWebDavSyncSuccess();
       }
+    } catch (error) {
+      await _markWebDavSyncFailure(_webDavSyncErrorCode(error));
     }
   }
 

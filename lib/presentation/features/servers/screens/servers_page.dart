@@ -16,6 +16,7 @@ import '../providers/servers_provider.dart';
 import '../widgets/add_server_sheet.dart';
 import '../widgets/server_card.dart';
 import '../widgets/server_context_menu.dart';
+import '../widgets/server_memo_curl_card.dart';
 import 'servers_settings_tab.dart';
 
 class ServersPage extends ConsumerStatefulWidget {
@@ -26,7 +27,6 @@ class ServersPage extends ConsumerStatefulWidget {
 }
 
 class _ServersPageState extends ConsumerState<ServersPage> with RouteAware {
-  static const _refreshInterval = Duration(seconds: 5);
   List<FloatingTabItemData> _tabItems(BuildContext context) => [
     FloatingTabItemData(
       icon: CupertinoIcons.rectangle_stack,
@@ -44,11 +44,20 @@ class _ServersPageState extends ConsumerState<ServersPage> with RouteAware {
 
   int _selectedIndex = 0;
   Timer? _refreshTimer;
+  ProviderSubscription<AsyncValue<AppSettings>>? _settingsSubscription;
+  bool _autoRefreshEnabled = true;
+  int _refreshIntervalSeconds =
+      AppSettingsController.defaultServersRefreshIntervalSeconds;
+  bool _isCurrentRoute = true;
 
   @override
   void initState() {
     super.initState();
-    _startTimer();
+    _settingsSubscription = ref.listenManual<AsyncValue<AppSettings>>(
+      appSettingsControllerProvider,
+      (_, next) => _applyRefreshSettings(next.valueOrNull),
+      fireImmediately: true,
+    );
   }
 
   @override
@@ -59,21 +68,36 @@ class _ServersPageState extends ConsumerState<ServersPage> with RouteAware {
 
   @override
   void didPushNext() {
+    _isCurrentRoute = false;
     _stopTimer();
   }
 
   @override
   void didPopNext() {
-    _startTimer();
+    _isCurrentRoute = true;
+    _syncTimerWithSettings();
     _refreshServerSnapshots();
   }
 
-  void _startTimer() {
+  void _applyRefreshSettings(AppSettings? settings) {
+    _autoRefreshEnabled = settings?.serversAutoRefreshEnabled ?? true;
+    _refreshIntervalSeconds =
+        settings?.serversRefreshIntervalSeconds ??
+        AppSettingsController.defaultServersRefreshIntervalSeconds;
+    _syncTimerWithSettings();
+  }
+
+  void _syncTimerWithSettings() {
+    if (!_isCurrentRoute || !_autoRefreshEnabled) {
+      _stopTimer();
+      return;
+    }
+    _startTimer(Duration(seconds: _refreshIntervalSeconds));
+  }
+
+  void _startTimer(Duration interval) {
     _stopTimer();
-    _refreshTimer = Timer.periodic(
-      _refreshInterval,
-      (_) => _refreshServerSnapshots(),
-    );
+    _refreshTimer = Timer.periodic(interval, (_) => _refreshServerSnapshots());
   }
 
   void _stopTimer() {
@@ -84,6 +108,7 @@ class _ServersPageState extends ConsumerState<ServersPage> with RouteAware {
   @override
   void dispose() {
     routeObserver.unsubscribe(this);
+    _settingsSubscription?.close();
     _stopTimer();
     super.dispose();
   }
@@ -287,7 +312,7 @@ class _ServerListTabState extends ConsumerState<_ServerListTab> {
                                     style: cardStyle,
                                   ),
                                 )
-                              : ServerCard(
+                              : ServerMemoCurlCard(
                                   server: server,
                                   style: cardStyle,
                                   onTap: () =>
